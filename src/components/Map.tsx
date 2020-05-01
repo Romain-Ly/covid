@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet'
+import React, { Component } from 'react';
+import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'css/map.scss';
 
 type State = {
@@ -16,7 +16,7 @@ export default class SimpleExample extends React.Component<{}, State> {
   }
 
   render() {
-    const position: L.LatLngExpression = [this.state.lat, this.state.lng]
+    const position: L.LatLngExpression = [this.state.lat, this.state.lng];
     return (
       <Map center={position} zoom={this.state.zoom}>
         <TileLayer

@@ -1,21 +1,21 @@
-const path = require("path");
+const path = require('path');
 
 module.exports = {
-    mode: "production",
+    mode: 'production',
 
-    entry: "./src/index.tsx",
+    entry: './src/index.tsx',
     output: {
-        path: path.resolve(__dirname, "./public"),
-        filename: "./dist/main.js"
+        path: path.resolve(__dirname, './public'),
+        filename: './dist/main.js'
     },
 
     // Enable sourcemaps for debugging webpack's output.
-    devtool: "source-map",
+    devtool: 'source-map',
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
-        // extensions: [".ts", ".tsx"]
-        extensions: [".wasm", ".ts", ".tsx", ".scss", ".mjs", ".cjs", ".js", ".json"],
+        // extensions: ['.ts', '.tsx']
+        extensions: ['.wasm', '.ts', '.tsx', '.scss', '.mjs', '.cjs', '.js', '.json'],
         alias: {
             css: path.resolve(__dirname, 'src/css/'),
         }
@@ -28,15 +28,24 @@ module.exports = {
                 exclude: /node_modules/,
                 use: [
                     {
-                        loader: "ts-loader"
+                        loader: 'ts-loader'
+                    },
+                    {
+                        loader: 'eslint-loader'
                     }
                 ]
             },
             // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
             {
-                enforce: "pre",
+                enforce: 'pre',
                 test: /\.js$/,
-                loader: "source-map-loader"
+                exclude: /node_modules/,
+                use: [{
+                    loader: 'source-map-loader'
+                },
+                {
+                    loader: 'eslint-loader'
+                }]
             },
             {
                 test: /\.s[ac]ss$/i,
@@ -57,7 +66,7 @@ module.exports = {
     // This is important because it allows us to avoid bundling all of our
     // dependencies, which allows browsers to cache those libraries between builds.
     externals: {
-        "react": "React",
-        "react-dom": "ReactDOM"
+        'react': 'React',
+        'react-dom': 'ReactDOM'
     }
 };
