@@ -9,9 +9,9 @@ type State = {
 
 export default class SimpleExample extends React.Component<{}, State> {
   state = {
-    lat: 51.505,
-    lng: -0.09,
-    zoom: 13,
+    lat: 46.85,
+    lng: 2.3518,
+    zoom: 6.5,
   }
 
   render() {
