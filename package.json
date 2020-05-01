@@ -23,9 +23,13 @@
   },
   "dependencies": {
     "@types/react-leaflet": "^2.5.1",
+    "css-loader": "^3.5.3",
     "leaflet": "^1.6.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-leaflet": "^2.6.3"
+    "react-leaflet": "^2.6.3",
+    "sass": "^1.26.5",
+    "sass-loader": "^8.0.2",
+    "style-loader": "^1.2.1"
   }
 }

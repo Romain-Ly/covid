@@ -15,7 +15,10 @@ module.exports = {
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
         // extensions: [".ts", ".tsx"]
-        extensions: [".wasm", ".ts", ".tsx", ".mjs", ".cjs", ".js", ".json"],
+        extensions: [".wasm", ".ts", ".tsx", ".scss", ".mjs", ".cjs", ".js", ".json"],
+        alias: {
+            css: path.resolve(__dirname, 'src/css/'),
+        }
     },
 
     module: {
@@ -34,7 +37,18 @@ module.exports = {
                 enforce: "pre",
                 test: /\.js$/,
                 loader: "source-map-loader"
-            }
+            },
+            {
+                test: /\.s[ac]ss$/i,
+                use: [
+                    // Creates `style` nodes from JS strings
+                    'style-loader',
+                    // Translates CSS into CommonJS
+                    'css-loader',
+                    // Compiles Sass to CSS
+                    'sass-loader',
+                ],
+            },
         ]
     },
 
