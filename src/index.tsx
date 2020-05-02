@@ -1,9 +1,9 @@
 import React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import SimpleExample from './components/Map';
+import LeafletMap from './components/Map';
 
 ReactDOM.render(
-  <SimpleExample />,
+  <LeafletMap />,
   document.getElementById('map')
 );
