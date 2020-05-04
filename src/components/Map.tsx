@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+  GeoJSON,
   LayersControl,
   Map,
   TileLayer,
@@ -10,6 +11,13 @@ from 'react-leaflet';
 const { BaseLayer } = LayersControl;
 
 import 'css/map.scss';
+
+/* Types */
+import { FeatureCollection } from 'geojson';
+
+interface MapProps {
+  geojson: FeatureCollection;
+}
 
 type State = {
   lat: number,
@@ -48,7 +56,7 @@ const Layers = () => {
   );
 };
 
-export default class LeafletMap extends React.Component<{}, State> {
+export default class LeafletMap extends React.Component<MapProps, State> {
   state = {
     lat: 46.85,
     lng: 2.3518,
@@ -57,12 +65,16 @@ export default class LeafletMap extends React.Component<{}, State> {
 
   render() {
     const position: L.LatLngExpression = [this.state.lat, this.state.lng];
+
     return (
       <Map center={position} zoom={this.state.zoom}>
         <Layers/>
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <GeoJSON
+          data={this.props.geojson}
         />
         <Marker position={position}>
           <Popup>

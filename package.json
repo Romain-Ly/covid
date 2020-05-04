@@ -28,6 +28,7 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "@types/geojson": "^7946.0.7",
     "@types/react-leaflet": "^2.5.1",
     "css-loader": "^3.5.3",
     "leaflet": "^1.6.0",
