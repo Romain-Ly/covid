@@ -1,22 +1,32 @@
-import React, { Component } from 'react';
+import React, {
+  useRef,
+} from 'react';
+
+import L from 'leaflet';
+
 import {
   GeoJSON,
   LayersControl,
   Map,
   TileLayer,
   Marker,
-  Popup }
-from 'react-leaflet';
+  Popup,
+  useLeaflet
+} from 'react-leaflet';
 
 const { BaseLayer } = LayersControl;
 
 import 'css/map.scss';
 
 /* Types */
-import { FeatureCollection } from 'geojson';
+import * as Leaflet from 'leaflet';
 
 interface MapProps {
-  geojson: FeatureCollection;
+  geojson: GeoJSON.GeoJsonObject;
+}
+
+interface GeojsonProps {
+  geojson: GeoJSON.GeoJsonObject;
 }
 
 type State = {
@@ -56,6 +66,52 @@ const Layers = () => {
   );
 };
 
+const Geojson = (props: GeojsonProps) => {
+  /** GeoJson wrapper */
+
+  const geoJsonRef = useRef(null);
+  const { map } = useLeaflet();
+
+  function highlightFeature(evt: Leaflet.LeafletMouseEvent) {
+    var layer = evt.target;
+
+    layer.setStyle({
+        weight: 5,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.7
+    });
+
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+    }
+  }
+
+  function resetHighlight(evt: Leaflet.LeafletMouseEvent) {
+    geoJsonRef.current.leafletElement.resetStyle(evt.target);
+  }
+
+  function zoomToFeature(evt: Leaflet.LeafletMouseEvent) {
+    map.fitBounds(evt.target.getBounds());
+  }
+
+  function onEachFeature(feature: GeoJSON.GeoJsonObject, layer: any) {
+    layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+    });
+  }
+
+  return (
+    <GeoJSON
+      ref={geoJsonRef}
+      data={props.geojson}
+      onEachFeature={onEachFeature}
+    />
+  );
+};
+
 export default class LeafletMap extends React.Component<MapProps, State> {
   state = {
     lat: 46.85,
@@ -73,8 +129,8 @@ export default class LeafletMap extends React.Component<MapProps, State> {
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <GeoJSON
-          data={this.props.geojson}
+        <Geojson
+          geojson={this.props.geojson}
         />
         <Marker position={position}>
           <Popup>
