@@ -1,31 +1,30 @@
 import React, {
-  useRef,
+  useState, useRef, useEffect, FunctionComponent
 } from 'react';
 
 import L from 'leaflet';
 
 import {
-  GeoJSON,
   LayersControl,
   Map,
   TileLayer,
   Marker,
   Popup,
-  useLeaflet
 } from 'react-leaflet';
 
 const { BaseLayer } = LayersControl;
 
+/* Views */
+import LegendInfo from './Legend';
+import Geojson, { GeojsonInfoProps } from './Geojson';
+
+/* Styles */
 import 'css/map.scss';
 
 /* Types */
 import * as Leaflet from 'leaflet';
 
 interface MapProps {
-  geojson: GeoJSON.GeoJsonObject;
-}
-
-interface GeojsonProps {
   geojson: GeoJSON.GeoJsonObject;
 }
 
@@ -37,7 +36,7 @@ type State = {
 
 const Layers = () => {
   return (
-    <LayersControl position="topright">
+    <LayersControl position="topleft">
       <BaseLayer checked name="Mapnik">
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -66,14 +65,23 @@ const Layers = () => {
   );
 };
 
-const Geojson = (props: GeojsonProps) => {
-  /** GeoJson wrapper */
+const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
+  const [properties, setProperties] = useState({
+    id: undefined,
+    department: ''
+  });
+
+  const state = {
+    lat: 46.85,
+    lng: 2.3518,
+    zoom: 6.5,
+  };
 
   const geoJsonRef = useRef(null);
-  const { map } = useLeaflet();
 
-  function highlightFeature(evt: Leaflet.LeafletMouseEvent) {
-    var layer = evt.target;
+  const geojsonOnMouseOver = (evt: Leaflet.LeafletMouseEvent): void =>  {
+    /* Properties from leaflet feature properties */
+    var layer = evt.sourceTarget;
 
     layer.setStyle({
         weight: 5,
@@ -85,59 +93,49 @@ const Geojson = (props: GeojsonProps) => {
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
         layer.bringToFront();
     }
-  }
 
-  function resetHighlight(evt: Leaflet.LeafletMouseEvent) {
-    geoJsonRef.current.leafletElement.resetStyle(evt.target);
-  }
+    const props = evt.sourceTarget.feature.properties;
 
-  function zoomToFeature(evt: Leaflet.LeafletMouseEvent) {
-    map.fitBounds(evt.target.getBounds());
-  }
-
-  function onEachFeature(feature: GeoJSON.GeoJsonObject, layer: any) {
-    layer.on({
-        mouseover: highlightFeature,
-        mouseout: resetHighlight,
-        click: zoomToFeature
+    setProperties({
+      id: props.code,
+      department: props.nom
     });
+  };
+
+  function geojsonOnMouseOut(evt: Leaflet.LeafletMouseEvent) {
+    geoJsonRef.current.leafletElement.resetStyle(evt.sourceTarget);
   }
+
+  useEffect(() => {
+    document.title = `Covid Information Map: current department ${properties.department}`;
+  });
+
+  const position: L.LatLngExpression = [state.lat, state.lng];
 
   return (
-    <GeoJSON
-      ref={geoJsonRef}
-      data={props.geojson}
-      onEachFeature={onEachFeature}
-    />
+    <Map center={position} zoom={state.zoom}>
+      <Layers/>
+      <LegendInfo
+        title='Information'
+        properties={properties}
+      />
+      <TileLayer
+        attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <Geojson
+        ref={geoJsonRef}
+        geojson={props.geojson}
+        onMouseOver={geojsonOnMouseOver}
+        onMouseOut={geojsonOnMouseOut}
+      />
+      <Marker position={position}>
+        <Popup>
+          Mark. <br />
+        </Popup>
+      </Marker>
+    </Map>
   );
 };
 
-export default class LeafletMap extends React.Component<MapProps, State> {
-  state = {
-    lat: 46.85,
-    lng: 2.3518,
-    zoom: 6.5,
-  }
-
-  render() {
-    const position: L.LatLngExpression = [this.state.lat, this.state.lng];
-
-    return (
-      <Map center={position} zoom={this.state.zoom}>
-        <Layers/>
-        <TileLayer
-          attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <Geojson
-          geojson={this.props.geojson}
-        />
-        <Marker position={position}>
-          <Popup>
-            Mark. <br />
-          </Popup>
-        </Marker>
-      </Map>
-    );
-  }
-}
+export default LeafletMap;
