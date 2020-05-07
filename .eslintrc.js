@@ -23,9 +23,14 @@ module.exports = {
     '@typescript-eslint',
   ],
   'rules': {
-    "linebreak-style": "error",
-    "no-extra-semi": "error",
+    'eol-last': ['error', 'always'],
+    'guard-for-in': 'error',
+    'linebreak-style': 'error',
+    'no-unexpected-multiline': 'off',
+    'no-extra-semi': 'error',
+    'no-trailing-spaces': 'error',
+    'no-unreachable': 'error',
     'quotes': ['error', 'single'],
-    "semi": ["error", "always"]
+    'semi': ['error', 'always']
   },
 };
