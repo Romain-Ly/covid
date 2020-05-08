@@ -3,6 +3,8 @@ import * as ReactDOM from 'react-dom';
 
 import LeafletMap from './components/Map';
 
+import { fetchHospitalisationData } from './models/Hospitalisation';
+
 /* Types */
 import { FeatureCollection } from 'geojson';
 
@@ -21,6 +23,8 @@ const fetchFrenchDepartments = async () => {
 
 const renderMap = async () => {
   const geojson: FeatureCollection = await fetchFrenchDepartments();
+  const hostData = await fetchHospitalisationData();
+  console.log(hostData);
 
   ReactDOM.render(
     <LeafletMap
