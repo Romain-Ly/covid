@@ -1,4 +1,6 @@
-import React from 'react';
+import React, {
+  RefObject
+} from 'react';
 
 import {
   GeoJSON,
@@ -9,10 +11,10 @@ import * as Leaflet from 'leaflet';
 
 /* Interfaces */
 interface GeojsonProps {
-  geojson: GeoJSON.GeoJsonObject;
+  geojson: RefObject<GeoJSON.GeoJsonObject>;
   onMouseOver?: (evt: Leaflet.LeafletMouseEvent) => void;
   onMouseOut?: (evt: Leaflet.LeafletMouseEvent) => void;
-  options?: Leaflet.GeoJSONOptions;
+  options?: RefObject<Leaflet.GeoJSONOptions>;
   ref: any;
 }
 
@@ -27,12 +29,12 @@ const Geojson = (props: GeojsonProps, ref:any) => {
   return (
     <GeoJSON
       ref={ref}
-      data={props.geojson}
+      data={props.geojson.current}
       onMouseOver={props.onMouseOver}
       onMouseOut={props.onMouseOut}
-      {...props.options}
+      {...props.options.current}
     />
   );
 };
 
-export default React.forwardRef(Geojson);
+export default React.memo(React.forwardRef(Geojson));

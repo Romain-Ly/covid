@@ -1,5 +1,9 @@
 import React, {
-  useState, useRef, useEffect, FunctionComponent
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
 } from 'react';
 
 import L from 'leaflet';
@@ -84,10 +88,8 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
     let layer = evt.propagatedFrom;
 
     layer.setStyle({
-        fillColor: '#666666',
-        weight: 2,
+        weight: 4,
         opacity: 1,
-
         color: '#666666',
         dashArray: '3',
         fillOpacity: 1
@@ -137,6 +139,9 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
 
   const position: L.LatLngExpression = [state.lat, state.lng];
 
+  const memGeojsonOnMouseOver = useCallback(geojsonOnMouseOver, []);
+  const memGeojsonOnMouseOut = useCallback(geojsonOnMouseOut, []);
+
   return (
     <Map center={position} zoom={state.zoom}>
       <Layers/>
@@ -150,10 +155,10 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
       />
       <Geojson
         ref={geoJsonRef}
-        geojson={props.geojson}
-        onMouseOver={geojsonOnMouseOver}
-        onMouseOut={geojsonOnMouseOut}
-        options={{style}}
+        geojson={useRef<GeoJSON.GeoJsonObject>(props.geojson)}
+        onMouseOver={memGeojsonOnMouseOver}
+        onMouseOut={memGeojsonOnMouseOut}
+        options={useRef<Leaflet.GeoJSONOptions>({style: style})}
       />
       <Marker position={position}>
         <Popup>
