@@ -2,7 +2,7 @@
 import { parseCsvFile, CsvRes } from '../helpers/csv';
 import { toInteger } from '../helpers/numbers';
 
-/* Types */
+/* Interfaces */
 interface HospProps { /* https://www.data.gouv.fr/fr/datasets/r/4900f53f-750d-4c5a-9df7-2d4ceb018acf */
   jour: Date  /* date */
   dep: string,   /* department. It should be an integer but Corse = [2A. 2B]. */
@@ -15,11 +15,17 @@ interface HospProps { /* https://www.data.gouv.fr/fr/datasets/r/4900f53f-750d-4c
 
 type DayMap = Map<Date, HospProps>;
 
-type AggrHospProps = {
-  dayMap: DayMap
-} & HospProps;
+interface DeptHospProps {
+  dayMap: DayMap,
+  total: HospProps
+}
 
-type AggrMap = Map<string, AggrHospProps>;
+type DeptMap = Map<string, DeptHospProps>;
+
+export interface HospData {
+  deptData: DeptMap,
+  countryTotal: HospProps,
+}
 
 /* Helpers */
 
@@ -34,13 +40,38 @@ function buildHospProps(data: CsvRes) {
   };
 }
 
+function computeHospProps(
+  a: HospProps, b: HospProps, cb: (x: number, y: number) => number): HospProps
+{
+  return ({
+    jour: a.jour,
+    dep: a.dep,
+    hosp: cb(a.hosp, b.hosp),
+    rad: cb(a.rad, b.rad),
+    rea: cb(a.rea, b.rea),
+    dc: cb(a.dc, b.dc)
+  });
+}
+
+function addHospProps(a: HospProps, b: HospProps) {
+  return computeHospProps(a, b, (x: number, y: number) => x + y);
+}
+
 export const fetchHospitalisationData = async () => {
   const url = 'https://www.data.gouv.fr/fr/datasets/r/6fadff46-9efd-4c53-942a-54aca783c30c';
   const data = await parseCsvFile(url, ';');
 
   /* TODO check if HospProps properties are present in csv results. */
 
-  const res: AggrMap = new Map();
+  const deptmap: DeptMap = new Map();
+  let countryTotal: HospProps = {
+    jour: new Date(), /* TODO take last date. */
+    dep: 'france',
+    hosp: 0,
+    rad: 0,
+    rea: 0,
+    dc: 0
+  };
 
   data.forEach((curr: CsvRes) => {
     if (toInteger(curr.sexe) !== 0) {
@@ -51,21 +82,24 @@ export const fetchHospitalisationData = async () => {
     let day = new Date(curr.jour);
     const line = buildHospProps(curr);
 
-    if (res.has(key)) {
-      const dept = res.get(key);
+    countryTotal = addHospProps(countryTotal, line);
+
+    if (deptmap.has(key)) {
+      const dept = deptmap.get(key);
 
       dept.dayMap.set(day, line);
-      dept.hosp += line.hosp;
-      dept.rad += line.rad;
-      dept.rea += line.rea;
-      dept.dc += line.dc;
+      dept.total = addHospProps(dept.total, line);
+
     } else {
-      res.set(key, {
+      deptmap.set(key, {
         dayMap: new Map<Date, HospProps>([[day, line]]),
-        ...line
+        total: line
       });
     } /* end else */
   });
 
-  return res;
+  return ({
+    deptData: deptmap,
+    countryTotal: countryTotal
+  });
 };

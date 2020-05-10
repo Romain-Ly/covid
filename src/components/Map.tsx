@@ -1,3 +1,4 @@
+/* Libs */
 import React, {
   FunctionComponent,
   useCallback,
@@ -23,6 +24,9 @@ const { BaseLayer } = LayersControl;
 import LegendInfo from './Legend';
 import Geojson from './Geojson';
 
+/* Models */
+import { HospData } from '../models/Hospitalisation';
+
 /* Styles */
 import 'css/map.scss';
 
@@ -30,6 +34,7 @@ import 'css/map.scss';
 
 interface MapProps {
   geojson: GeoJSON.GeoJsonObject;
+  data: HospData
 }
 
 type State = {
@@ -112,19 +117,19 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
   }
 
   function getColor(x: number) {
-    return x > 1000 ? '#800026' :
-           x > 500  ? '#BD0026' :
-           x > 200  ? '#E31A1C' :
-           x > 100  ? '#FC4E2A' :
-           x > 50   ? '#FD8D3C' :
-           x > 20   ? '#FEB24C' :
-           x > 10   ? '#FED976' :
+    return x > 0.05 ? '#800026' :
+           x > 0.04  ? '#BD0026' :
+           x > 0.03  ? '#E31A1C' :
+           x > 0.02  ? '#FC4E2A' :
+           x > 0.01  ? '#FD8D3C' :
+           x > 0.005  ? '#FEB24C' :
+           x > 0.001 ? '#FED976' :
                       '#FFEDA0';
   }
 
   function style(feature: GeoJSON.Feature) {
     return {
-      fillColor: getColor(feature.properties.data.dc),
+      fillColor: getColor(feature.properties.data.total.dc / props.data.countryTotal.dc),
       weight: 2,
       opacity: 1,
       color: 'white',
