@@ -24,7 +24,16 @@ const fetchFrenchDepartments = async () => {
 const renderMap = async () => {
   const geojson: FeatureCollection = await fetchFrenchDepartments();
   const hostData = await fetchHospitalisationData();
-  console.log(hostData);
+
+  geojson.features = geojson.features.map((feature) => {
+      const key = feature.properties.code;
+      const data = hostData.get(key);
+
+      if (data) {
+        feature.properties.data = data;
+      }
+      return feature;
+  });
 
   ReactDOM.render(
     <LeafletMap

@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 
 import L from 'leaflet';
+import * as Leaflet from 'leaflet';
 
 import {
   LayersControl,
@@ -16,13 +17,12 @@ const { BaseLayer } = LayersControl;
 
 /* Views */
 import LegendInfo from './Legend';
-import Geojson, { GeojsonInfoProps } from './Geojson';
+import Geojson from './Geojson';
 
 /* Styles */
 import 'css/map.scss';
 
 /* Types */
-import * as Leaflet from 'leaflet';
 
 interface MapProps {
   geojson: GeoJSON.GeoJsonObject;
@@ -81,13 +81,16 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
 
   const geojsonOnMouseOver = (evt: Leaflet.LeafletMouseEvent): void =>  {
     /* Properties from leaflet feature properties */
-    var layer = evt.sourceTarget;
+    let layer = evt.propagatedFrom;
 
     layer.setStyle({
-        weight: 5,
-        color: '#666',
-        dashArray: '',
-        fillOpacity: 0.7
+        fillColor: '#666666',
+        weight: 2,
+        opacity: 1,
+
+        color: '#666666',
+        dashArray: '3',
+        fillOpacity: 1
     });
 
     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -106,6 +109,28 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
     geoJsonRef.current.leafletElement.resetStyle(evt.sourceTarget);
   }
 
+  function getColor(x: number) {
+    return x > 1000 ? '#800026' :
+           x > 500  ? '#BD0026' :
+           x > 200  ? '#E31A1C' :
+           x > 100  ? '#FC4E2A' :
+           x > 50   ? '#FD8D3C' :
+           x > 20   ? '#FEB24C' :
+           x > 10   ? '#FED976' :
+                      '#FFEDA0';
+  }
+
+  function style(feature: GeoJSON.Feature) {
+    return {
+      fillColor: getColor(feature.properties.data.dc),
+      weight: 2,
+      opacity: 1,
+      color: 'white',
+      dashArray: '3',
+      fillOpacity: 0.65
+    };
+  }
+
   useEffect(() => {
     document.title = `Covid Information Map: current department ${properties.department}`;
   });
@@ -120,14 +145,15 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
         properties={properties}
       />
       <TileLayer
-        attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&amp;copy <a href="https://carto.com/copyright">Carto</a> contributors'
+        url="https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png"
       />
       <Geojson
         ref={geoJsonRef}
         geojson={props.geojson}
         onMouseOver={geojsonOnMouseOver}
         onMouseOut={geojsonOnMouseOut}
+        options={{style}}
       />
       <Marker position={position}>
         <Popup>

@@ -12,6 +12,7 @@ interface GeojsonProps {
   geojson: GeoJSON.GeoJsonObject;
   onMouseOver?: (evt: Leaflet.LeafletMouseEvent) => void;
   onMouseOut?: (evt: Leaflet.LeafletMouseEvent) => void;
+  options?: Leaflet.GeoJSONOptions;
   ref: any;
 }
 
@@ -29,6 +30,7 @@ const Geojson = (props: GeojsonProps, ref:any) => {
       data={props.geojson}
       onMouseOver={props.onMouseOver}
       onMouseOut={props.onMouseOut}
+      {...props.options}
     />
   );
 };
