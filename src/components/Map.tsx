@@ -13,7 +13,6 @@ import * as Leaflet from 'leaflet';
 import {
   LayersControl,
   Map,
-  TileLayer,
   Marker,
   Popup,
 } from 'react-leaflet';
@@ -23,6 +22,7 @@ const { BaseLayer } = LayersControl;
 /* Views */
 import LegendInfo from './Legend';
 import Geojson from './Geojson';
+import TileLayers, { TileLayersProps } from './TileLayers';
 
 /* Models */
 import { HospData } from '../models/Hospitalisation';
@@ -44,33 +44,29 @@ type State = {
 }
 
 const Layers = () => {
+  const tiles = [{
+      name: 'Mapnik',
+      attribution: '&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    }, {
+      name: 'B&W',
+      attribution: '&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    }, {
+      name: 'Positron',
+      attribution: '&amp;copy <a href="https://carto.com/copyright">Carto</a> contributors',
+      url: 'https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png',
+      checked: true
+    }, {
+      name: '"Dark Matter',
+      attribution: '&amp;copy <a href="https://carto.com/copyright">Carto</a> contributors',
+      url: 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png'
+    }];
+
   return (
-    <LayersControl position="topleft">
-      <BaseLayer checked name="Mapnik">
-        <TileLayer
-          attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-      </BaseLayer>
-      <BaseLayer name="B&W">
-        <TileLayer
-          attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          url="https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png"
-        />
-      </BaseLayer>
-      <BaseLayer name="Positron">
-        <TileLayer
-          attribution='&amp;copy <a href="https://carto.com/copyright">Carto</a> contributors'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png"
-        />
-      </BaseLayer>
-      <BaseLayer name="Dark Matter">
-        <TileLayer
-          attribution='&amp;copy <a href="https://carto.com/copyright">Carto</a> contributors'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png"
-        />
-      </BaseLayer>
-    </LayersControl>
+    <TileLayers
+      tiles={tiles}
+    />
   );
 };
 
@@ -153,10 +149,6 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
       <LegendInfo
         title='Information'
         properties={properties}
-      />
-      <TileLayer
-        attribution='&amp;copy <a href="https://carto.com/copyright">Carto</a> contributors'
-        url="https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png"
       />
       <Geojson
         ref={geoJsonRef}
