@@ -29,6 +29,7 @@ module.exports = {
     'no-unexpected-multiline': 'off',
     'no-extra-semi': 'error',
     'no-trailing-spaces': 'error',
+    "@typescript-eslint/no-unused-vars": ["error"],
     'no-unreachable': 'error',
     'quotes': ['error', 'single'],
     'semi': ['error', 'always']

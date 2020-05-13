@@ -11,18 +11,15 @@ import L from 'leaflet';
 import * as Leaflet from 'leaflet';
 
 import {
-  LayersControl,
   Map,
   Marker,
   Popup,
 } from 'react-leaflet';
 
-const { BaseLayer } = LayersControl;
-
 /* Views */
 import LegendInfo from './Legend';
 import Geojson from './Geojson';
-import TileLayers, { TileLayersProps } from './TileLayers';
+import TileLayers from './TileLayers';
 
 /* Models */
 import { HospData } from '../models/Hospitalisation';
@@ -35,12 +32,6 @@ import 'css/map.scss';
 interface MapProps {
   geojson: GeoJSON.GeoJsonObject;
   data: HospData
-}
-
-type State = {
-  lat: number,
-  lng: number,
-  zoom: number,
 }
 
 const Layers = () => {

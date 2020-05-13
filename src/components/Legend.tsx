@@ -45,7 +45,7 @@ class LegendInfo extends MapControl<Props> {
     this.panelDiv.innerHTML = this.renderHtml(toProps.properties);
   }
 
-  createLeafletElement(props: Props): LeafletElement {
+  createLeafletElement(): LeafletElement {
     const MapInfo = L.Control.extend({
       onAdd: () => {
         this.panelDiv = L.DomUtil.create('div', 'info');
