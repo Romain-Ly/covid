@@ -10,12 +10,11 @@ import {
 import * as Leaflet from 'leaflet';
 
 /* Interfaces */
-interface GeojsonProps {
-  geojson: RefObject<GeoJSON.GeoJsonObject>;
+export interface GeojsonProps {
+  geojson: RefObject<GeoJSON.FeatureCollection>;
   onMouseOver?: (evt: Leaflet.LeafletMouseEvent) => void;
   onMouseOut?: (evt: Leaflet.LeafletMouseEvent) => void;
   options?: RefObject<Leaflet.GeoJSONOptions>;
-  ref: any;
 }
 
 export type GeojsonInfoProps = {

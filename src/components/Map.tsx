@@ -18,7 +18,7 @@ import {
 
 /* Views */
 import LegendInfo from './Legend';
-import Geojson from './Geojson';
+import Choropleth from './Choropleth';
 import TileLayers from './TileLayers';
 
 /* Models */
@@ -30,7 +30,7 @@ import 'css/map.scss';
 /* Types */
 
 interface MapProps {
-  geojson: GeoJSON.GeoJsonObject;
+  geojson: GeoJSON.FeatureCollection;
   data: HospData
 }
 
@@ -103,28 +103,6 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
     geoJsonRef.current.leafletElement.resetStyle(evt.sourceTarget);
   }
 
-  function getColor(x: number) {
-    return x > 0.05 ? '#800026' :
-           x > 0.04  ? '#BD0026' :
-           x > 0.03  ? '#E31A1C' :
-           x > 0.02  ? '#FC4E2A' :
-           x > 0.01  ? '#FD8D3C' :
-           x > 0.005  ? '#FEB24C' :
-           x > 0.001 ? '#FED976' :
-                      '#FFEDA0';
-  }
-
-  function style(feature: GeoJSON.Feature) {
-    return {
-      fillColor: getColor(feature.properties.data.total.dc / props.data.countryTotal.dc),
-      weight: 2,
-      opacity: 1,
-      color: 'white',
-      dashArray: '3',
-      fillOpacity: 0.65
-    };
-  }
-
   useEffect(() => {
     document.title = `Covid Information Map: current department ${properties.department}`;
   });
@@ -141,12 +119,12 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
         title='Information'
         properties={properties}
       />
-      <Geojson
+      <Choropleth
         ref={geoJsonRef}
-        geojson={useRef<GeoJSON.GeoJsonObject>(props.geojson)}
+        geojson={useRef<GeoJSON.FeatureCollection>(props.geojson)}
         onMouseOver={memGeojsonOnMouseOver}
         onMouseOut={memGeojsonOnMouseOut}
-        options={useRef<Leaflet.GeoJSONOptions>({style: style})}
+        getValue={(prop) => prop.data.total.dc}
       />
       <Marker position={position}>
         <Popup>
