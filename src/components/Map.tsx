@@ -15,7 +15,9 @@ import {
 } from 'react-leaflet';
 
 /* Views */
-import LegendInfo from './Legend';
+import LegendInfo, {
+  LegendInfoProps
+} from './LegendInfo';
 import Choropleth from './Choropleth';
 import TileLayers from './TileLayers';
 
@@ -61,6 +63,7 @@ const Layers = () => {
 
 const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
   const [properties, setProperties] = useState({
+    title: 'Information',
     id: undefined,
     department: '',
     key: '',
@@ -72,6 +75,8 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
     lng: 2.3518,
     zoom: 6.5,
   };
+
+  //#region Choropleth
 
   const geoJsonRef = useRef(null);
 
@@ -94,6 +99,7 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
     const props = evt.sourceTarget.feature.properties;
 
     setProperties({
+      title: 'Information',
       id: props.code,
       department: props.nom,
       key: 'deceased',
@@ -109,8 +115,37 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
     document.title = `Covid Information Map: current department ${properties.department}`;
   });
 
-  const position: L.LatLngExpression = [state.lat, state.lng];
+  //#endregion
+  //#region LegendInfo
 
+  const renderRow = (key: string, value: string | number) => {
+    return (`
+      <div class="row">
+        <div class="col-sm-4">
+          ${key}
+        </div>
+        <div class="col-sm">
+          ${value}
+        </div>
+      </div>
+    `);
+  };
+
+  const infoRender= (props: LegendInfoProps) => {
+    return (`
+      <div>
+        <h6 class="title">${props.title}</h6>
+        <div class="container">
+          ${renderRow('dept', props.department)}
+          ${renderRow(props.key, props.value)}
+        </div>
+      </div>
+    `);
+  };
+
+  //#endregion
+
+  const position: L.LatLngExpression = [state.lat, state.lng];
   const memGeojsonOnMouseOver = useCallback(geojsonOnMouseOver, []);
   const memGeojsonOnMouseOut = useCallback(geojsonOnMouseOut, []);
 
@@ -119,6 +154,7 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
       <Layers/>
       <LegendInfo
         title='Information'
+        renderCb={infoRender}
         information={properties}
       />
       <Choropleth

@@ -13,6 +13,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 /* Types */
 export type LegendInfoProps = {
+  title?: string,
   id: string | undefined;
   department: string;
   key: string;
@@ -22,42 +23,19 @@ export type LegendInfoProps = {
 type Props = {
   title?: string,
   information: LegendInfoProps
+  renderCb: (props: LegendInfoProps) => string
 } & MapControlProps
 
 class LegendInfo extends MapControl<Props> {
   title: string;
-  information: LegendInfoProps;
+  information: LegendInfoProps
+  renderHtml: (props: LegendInfoProps) => string;
   panelDiv: any;
 
   constructor(props: Props) {
     super(props);
-    this.title = props.title;
+    this.renderHtml = props.renderCb;
     this.information = props.information;
-  }
-
-  renderRow(key: string, value: string | number): string {
-    return (`
-      <div class="row">
-        <div class="col-sm-4">
-          ${key}
-        </div>
-        <div class="col-sm">
-          ${value}
-        </div>
-      </div>
-    `);
-  }
-
-  renderHtml(props: LegendInfoProps) {
-    return (`
-      <div>
-        <h6 class="title">${this.title}</h6>
-        <div class="container">
-          ${this.renderRow('dept', props.department)}
-          ${this.renderRow(props.key, props.value)}
-        </div>
-      </div>
-    `);
   }
 
   updateLeafletElement(fromProps: Props, toProps: Props) {
