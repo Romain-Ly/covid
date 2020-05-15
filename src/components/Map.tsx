@@ -12,8 +12,6 @@ import * as Leaflet from 'leaflet';
 
 import {
   Map,
-  Marker,
-  Popup,
 } from 'react-leaflet';
 
 /* Views */
@@ -126,11 +124,6 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
         onMouseOut={memGeojsonOnMouseOut}
         getValue={(prop) => prop.data.total.dc}
       />
-      <Marker position={position}>
-        <Popup>
-          Mark. <br />
-        </Popup>
-      </Marker>
     </Map>
   );
 };
