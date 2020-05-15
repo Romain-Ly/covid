@@ -58,6 +58,11 @@ module.exports = {
                     'sass-loader',
                 ],
             },
+            {
+                // For bootstrap.css
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
+            }
         ]
     },
 

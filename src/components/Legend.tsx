@@ -9,47 +9,66 @@ type LeafletElement = L.Control
 
 /* Styles */
 import 'css/legend.scss';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 /* Types */
-import {
-  GeojsonInfoProps
-} from './Geojson';
+export type LegendInfoProps = {
+  id: string | undefined;
+  department: string;
+  key: string;
+  value: number;
+}
 
 type Props = {
   title?: string,
-  properties: GeojsonInfoProps
+  information: LegendInfoProps
 } & MapControlProps
 
 class LegendInfo extends MapControl<Props> {
   title: string;
-  properties: GeojsonInfoProps;
+  information: LegendInfoProps;
   panelDiv: any;
 
   constructor(props: Props) {
     super(props);
     this.title = props.title;
-    this.properties = props.properties;
+    this.information = props.information;
   }
 
-  renderHtml(props: GeojsonInfoProps) {
-    return `
-      <h4>${this.title}</h4>
-      <p>
-       id : ${props.id}<br />
-       department: ${props.department}<br />
-      </p>
-    `;
+  renderRow(key: string, value: string | number): string {
+    return (`
+      <div class="row">
+        <div class="col-sm-4">
+          ${key}
+        </div>
+        <div class="col-sm">
+          ${value}
+        </div>
+      </div>
+    `);
+  }
+
+  renderHtml(props: LegendInfoProps) {
+    return (`
+      <div>
+        <h6 class="title">${this.title}</h6>
+        <div class="container">
+          ${this.renderRow('dept', props.department)}
+          ${this.renderRow(props.key, props.value)}
+        </div>
+      </div>
+    `);
   }
 
   updateLeafletElement(fromProps: Props, toProps: Props) {
-    this.panelDiv.innerHTML = this.renderHtml(toProps.properties);
+    this.panelDiv.innerHTML = this.renderHtml(toProps.information);
   }
 
   createLeafletElement(): LeafletElement {
     const MapInfo = L.Control.extend({
       onAdd: () => {
         this.panelDiv = L.DomUtil.create('div', 'info');
-        this.panelDiv.innerHTML = this.renderHtml(this.properties);
+        this.panelDiv.innerHTML = this.renderHtml(this.information);
         return this.panelDiv;
       }
     });

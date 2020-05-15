@@ -17,11 +17,6 @@ export interface GeojsonProps {
   options?: RefObject<Leaflet.GeoJSONOptions>;
 }
 
-export type GeojsonInfoProps = {
-  id: string | undefined;
-  department: string;
-}
-
 const Geojson = (props: GeojsonProps, ref:any) => {
   /** GeoJson View */
 

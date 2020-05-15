@@ -62,7 +62,9 @@ const Layers = () => {
 const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
   const [properties, setProperties] = useState({
     id: undefined,
-    department: ''
+    department: '',
+    key: '',
+    value: 0
   });
 
   const state = {
@@ -93,7 +95,9 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
 
     setProperties({
       id: props.code,
-      department: props.nom
+      department: props.nom,
+      key: 'deceased',
+      value: props.data.total.dc
     });
   };
 
@@ -115,7 +119,7 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
       <Layers/>
       <LegendInfo
         title='Information'
-        properties={properties}
+        information={properties}
       />
       <Choropleth
         ref={geoJsonRef}
