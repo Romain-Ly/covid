@@ -9,9 +9,20 @@ import { quantile } from 'simple-statistics';
 import Geojson, { GeojsonProps } from './Geojson';
 
 /* Types */
+import LegendInfo, {
+  LegendInfoProps
+} from './LegendInfo';
 import * as Leaflet from 'leaflet';
 
-/* Helpers */
+/* Styles */
+import 'css/choropleth.scss';
+
+/* Interfaces */
+
+type scaleColor = {
+  key: number
+  value: string
+}
 
 interface ChoroplethProps extends GeojsonProps {
   /* function returning the value for each geojson.properties. */
@@ -24,7 +35,7 @@ interface ChoroplethProps extends GeojsonProps {
    scaleFunction?: 'quantile'
 }
 
-function buildQuantileScale(data: number[], colors: string[]): (x: number) => string {
+function buildQuantileScale(data: number[], colors: string[]): scaleColor[] {
   const nbDivision = colors.length;
   const quantiles = [];
 
@@ -38,20 +49,10 @@ function buildQuantileScale(data: number[], colors: string[]): (x: number) => st
     return acc;
   }, []);
 
-  return ((x:number) => {
-    let previousColor = scaleColor[0];
-
-    for (let i = 0; i < scaleColor.length; i++) {
-      if (x < scaleColor[i].key) {
-        return previousColor.value;
-      }
-      previousColor = scaleColor[i];
-    }
-    return previousColor.value;
-  });
+  return scaleColor;
 }
 
-function buildColorScale(props: ChoroplethProps): (x: number) => string {
+function buildColorScale(props: ChoroplethProps): scaleColor[] {
   let data: number[] = [];
 
   props.geojson.current.features.forEach((feature) => {
@@ -65,9 +66,23 @@ function buildColorScale(props: ChoroplethProps): (x: number) => string {
   }
 }
 
-const Choropleth = React.forwardRef((props: ChoroplethProps, ref: any) => {
-  const getColor = buildColorScale(props);
+function getColorCb(scaleColor:  scaleColor[]): (x: number) => string {
+  return ((x:number) => {
+    let previousColor = scaleColor[0];
 
+    for (let i = 0; i < scaleColor.length; i++) {
+      if (x < scaleColor[i].key) {
+        return previousColor.value;
+      }
+      previousColor = scaleColor[i];
+    }
+    return previousColor.value;
+  });
+}
+
+const Choropleth = React.forwardRef((props: ChoroplethProps, ref: any) => {
+  const scaleColors = buildColorScale(props);
+  const getColor = getColorCb(scaleColors);
   function style(feature: GeoJSON.Feature) {
     return {
       fillColor: getColor(feature.properties.data.total.dc),
@@ -79,15 +94,79 @@ const Choropleth = React.forwardRef((props: ChoroplethProps, ref: any) => {
     };
   }
 
+  //#region Geojson Information
+
+  const renderRow = () => {
+    let res = '';
+    for (var i = 0; i < scaleColors.length; i++) {
+      let curr = scaleColors[i];
+      let value: string;
+
+      let left, right, middle;
+      if (scaleColors[i+1]) {
+        left = curr.key;
+        middle = '&ndash;';
+        right = scaleColors[i+1].key;
+      } else {
+        left = '';
+        middle = '>';
+        right = curr.key;
+      }
+      value = `
+      <div class="legend_color left col-sm">
+        ${left}
+      </div>
+      <div class="legend_color col-sm-1">
+        ${middle}
+      </div>
+      <div class="legend_color col-sm">
+        ${right}
+      </div>
+    `;
+
+      res += `
+        <div class="row">
+          <div class="legend_color col-sm-3">
+            <i style="background:${curr.value}"></i>
+          </div>
+          ${value}
+        </div>
+      `;
+    }
+
+    return res;
+  };
+
+  const infoRender= (prop: LegendInfoProps) => {
+    return (`
+      <div class="legend">
+        <h6 class="title">${prop.title}</h6>
+        <div class="container">
+          ${renderRow()}
+        </div>
+      </div>
+    `);
+  };
+
+  //#endregion
+
   return (
-    <Geojson
-      ref={ref}
-      geojson={props.geojson}
-      onMouseOver={props.onMouseOver}
-      onMouseOut={props.onMouseOut}
-      options={useRef<Leaflet.GeoJSONOptions>({style: style})}
-      //style={style}
-    />
+    <div>
+      <Geojson
+        ref={ref}
+        geojson={props.geojson}
+        onMouseOver={props.onMouseOver}
+        onMouseOut={props.onMouseOut}
+        options={useRef<Leaflet.GeoJSONOptions>({style: style})}
+        //style={style}
+      />
+      <LegendInfo
+        position='bottomright'
+        title='Information'
+        renderCb={infoRender}
+        information={{title:''}}
+      />
+    </div>
   );
 
 });

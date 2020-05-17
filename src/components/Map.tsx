@@ -116,7 +116,7 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
   });
 
   //#endregion
-  //#region LegendInfo
+  //#region Geojson Information
 
   const renderRow = (key: string, value: string | number) => {
     return (`
@@ -153,6 +153,8 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
     <Map center={position} zoom={state.zoom}>
       <Layers/>
       <LegendInfo
+        id='information'
+        position='topright'
         title='Information'
         renderCb={infoRender}
         information={properties}

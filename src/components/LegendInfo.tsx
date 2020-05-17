@@ -14,28 +14,34 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 /* Types */
 export type LegendInfoProps = {
   title?: string,
-  id: string | undefined;
-  department: string;
-  key: string;
-  value: number;
+  id?: string | undefined;
+  department?: string;
+  key?: string;
+  value?: number;
 }
 
 type Props = {
+  position: L.ControlPosition,
+  renderCb: (props: LegendInfoProps) => string,
   title?: string,
-  information: LegendInfoProps
-  renderCb: (props: LegendInfoProps) => string
+  id?: string,   /* id of legend division */
+  information?: LegendInfoProps,
 } & MapControlProps
 
 class LegendInfo extends MapControl<Props> {
   title: string;
   information: LegendInfoProps
   renderHtml: (props: LegendInfoProps) => string;
+  position: L.ControlPosition;
+  id?: string;
   panelDiv: any;
 
   constructor(props: Props) {
     super(props);
     this.renderHtml = props.renderCb;
     this.information = props.information;
+    this.position = props.position;
+    this.id = props.id ?? 'info';
   }
 
   updateLeafletElement(fromProps: Props, toProps: Props) {
@@ -45,12 +51,12 @@ class LegendInfo extends MapControl<Props> {
   createLeafletElement(): LeafletElement {
     const MapInfo = L.Control.extend({
       onAdd: () => {
-        this.panelDiv = L.DomUtil.create('div', 'info');
+        this.panelDiv = L.DomUtil.create('div', this.id);
         this.panelDiv.innerHTML = this.renderHtml(this.information);
         return this.panelDiv;
       }
     });
-    return new MapInfo({ position: 'topright' });
+    return new MapInfo({ position: this.props.position});
   }
 
   componentDidMount() {
