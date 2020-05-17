@@ -1,18 +1,45 @@
 .legend {
     line-height: 18px;
     color: #555;
-    min-width: 5ch;
+    min-width: 15ch;
     font: 12px/14px Arial, Helvetica, sans-serif;
-
 
     &_color {
         padding: 1px 2px;
     }
-    &_color.left {
+    &_text {
+        padding: 1px 2px;
+    }
+    &_text.left {
         text-align: right;
     }
-    &_color.right {
+    &_text.right {
         text-align: left;
+    }
+    &_text_selected {
+        font-weight: bold;
+    }
+
+    &_selected {
+        border-style: solid;
+        border-left-width: 1px;
+        border-top-width: 1px;
+        border-right-width: 1px;
+        border-bottom-width: 1px;
+        padding: 1px 2px;
+    }
+
+    &_not_selected {
+        border-style: solid;
+        border-left-width: 1px;
+        border-top-width: 1px;
+        border-right-width: 1px;
+        border-bottom-width: 1px;
+        padding: 1px 2px;
+    }
+
+    &_row_selected {
+        background: rgba(243,243,243,0.9);
     }
 }
 

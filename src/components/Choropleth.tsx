@@ -25,6 +25,9 @@ type scaleColor = {
 }
 
 interface ChoroplethProps extends GeojsonProps {
+  /* Used to emphaze legend row */
+  selectedValue?: number
+
   /* function returning the value for each geojson.properties. */
    getValue: (properties: GeoJSON.GeoJsonProperties ) => number;
 
@@ -96,8 +99,10 @@ const Choropleth = React.forwardRef((props: ChoroplethProps, ref: any) => {
 
   //#region Geojson Information
 
-  const renderRow = () => {
+  const renderRow = (prop: LegendInfoProps) => {
     let res = '';
+    let legendDone: boolean;
+
     for (var i = 0; i < scaleColors.length; i++) {
       let curr = scaleColors[i];
       let value: string;
@@ -112,37 +117,59 @@ const Choropleth = React.forwardRef((props: ChoroplethProps, ref: any) => {
         middle = '>';
         right = curr.key;
       }
+
+      /* emphase selected legend row. */
+      let legendSelected: '_not_selected' | '_selected' = '_not_selected';
+      let next = scaleColors[i+1];
+      if (!legendDone) {
+        if (next) {
+          if (prop.value < next.key) {
+            legendSelected = '_selected';
+            legendDone = true;
+          }
+        } else {
+          /* last legend tile. */
+          legendSelected = '_selected';
+          legendDone = true;
+        }
+      }
+
+      let select = 'legend_text' + legendSelected;
       value = `
-      <div class="legend_color left col-sm">
+      <div class="legend_text left ${select} col-sm">
         ${left}
       </div>
-      <div class="legend_color col-sm-1">
+      <div class="legend_text ${select} col-sm-1">
         ${middle}
       </div>
-      <div class="legend_color col-sm">
+      <div class="legend_text ${select} right col-sm">
         ${right}
       </div>
-    `;
+      `;
 
+      select = 'legend' + legendSelected;
+      const toto = 'legend_row' + legendSelected;
       res += `
-        <div class="row">
-          <div class="legend_color col-sm-3">
-            <i style="background:${curr.value}"></i>
+        <div class="row ${toto}">
+          <div class="legend_color col-sm-3 ">
+            <i class="${select}" style="background:${curr.value}"></i>
           </div>
           ${value}
         </div>
       `;
+
+      legendSelected = '_not_selected'; /* use it only once. */
     }
 
     return res;
   };
 
-  const infoRender= (prop: LegendInfoProps) => {
+  const infoRender = (prop: LegendInfoProps) => {
     return (`
       <div class="legend">
         <h6 class="title">${prop.title}</h6>
         <div class="container">
-          ${renderRow()}
+          ${renderRow(prop)}
         </div>
       </div>
     `);
@@ -164,7 +191,7 @@ const Choropleth = React.forwardRef((props: ChoroplethProps, ref: any) => {
         position='bottomright'
         title='Information'
         renderCb={infoRender}
-        information={{title:''}}
+        information={{title: '', value: props.selectedValue}}
       />
     </div>
   );

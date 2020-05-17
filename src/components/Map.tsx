@@ -67,7 +67,7 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
     id: undefined,
     department: '',
     key: '',
-    value: 0
+    value: undefined
   });
 
   const state = {
@@ -165,6 +165,7 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
         onMouseOver={memGeojsonOnMouseOver}
         onMouseOut={memGeojsonOnMouseOut}
         getValue={(prop) => prop.data.total.dc}
+        selectedValue={properties.value}
       />
     </Map>
   );
