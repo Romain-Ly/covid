@@ -1,0 +1,19 @@
+
+.sidebar {
+    background: #BFBCCB;
+    color: #fff;
+    transition: all 0.3s;
+
+    &.active {
+        @extend .sidebar;
+        min-width: 250px;
+        max-width: 250px;
+    }
+
+    &.collapsed {
+        @extend .sidebar;
+        min-width: 70px;
+        max-width: 70px;
+        text-align: center;
+    }
+}

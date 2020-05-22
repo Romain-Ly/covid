@@ -1,9 +1,14 @@
 import React from 'react';
 import * as ReactDOM from 'react-dom';
 
+/* Views */
 import LeafletMap from './components/Map';
+import SideBar from './components/SideBar';
 
 import { fetchHospitalisationData, HospData } from './models/Hospitalisation';
+
+/* Styles */
+import 'css/index.scss';
 
 /* Types */
 import { FeatureCollection } from 'geojson';
@@ -35,11 +40,17 @@ const renderMap = async () => {
       return feature;
   });
 
-  ReactDOM.render(
-    <LeafletMap
-      geojson={geojson}
-      data={hospData}
-    />,
+  ReactDOM.render((
+    <div className='wrapper'>
+      <SideBar
+        title='Geomap'
+      />
+      <LeafletMap
+        geojson={geojson}
+        data={hospData}
+      />
+    </div>
+  ),
     document.getElementById('map')
   );
 };

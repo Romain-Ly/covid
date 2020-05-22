@@ -1,0 +1,11 @@
+.wrapper {
+    display: flex;
+    height: 100%;
+    align-items: stretch;
+}
+
+#map {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
