@@ -1,8 +1,12 @@
 
+$base-color: #BFBCCB;
+$text-color: #fff;
+$header-color: #343a40;
+
 .sidebar {
-    background: #BFBCCB;
+    background: $base-color;
     color: #fff;
-    transition: all 0.3s;
+    transition: all 0.1s;
 
     &.active {
         @extend .sidebar;
@@ -15,5 +19,21 @@
         min-width: 70px;
         max-width: 70px;
         text-align: center;
+    }
+
+    &__header {
+        padding-left: 5px;
+        padding-right: 5px;
+
+        & .row {
+            width: 100%;
+            margin: 0 0px;
+            align-items: center;
+
+            & h3 {
+                margin: 0 0px;
+            }
+
+        }
     }
 }

@@ -2,6 +2,7 @@
 import React, {
   useState
 } from 'react';
+import FA from 'react-fontawesome';
 
 /* Styles */
 import 'css/sidebar.scss';
@@ -26,61 +27,73 @@ interface NavHeaderProps {
 
 const NavFullHeader = (props: NavHeaderProps) => {
   return (
-    <div>
-      <div className="sidebar-header">
-        <h4>{props.title}</h4>
+    <div
+     className='row'
+     onClick={props.onClick}
+    >
+      <div className='col-sm-8'>
+        <h3>
+          {props.title}
+        </h3>
       </div>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <div className="container-fluid">
-          <button
-            type="button"
-            id="sidebarCollapse"
-            className="btn btn-info"
+      <div className='col-sm-4'>
+        <button
+          type="button"
+          id="sidebarCollapse"
+          className="btn btn-outline-light"
+          onClick={props.onClick}
+        >
+          <FA
+            className="sidebar__button__icon"
+            name="chevron-circle-left"
+            size="2x"
+            style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }}
             onClick={props.onClick}
-          >
-            <i className="fas fa-align-left"></i>
-            <span>Toggle Sidebar</span>
-          </button>
-        </div>
-      </nav>
+          />
+        </button>
+      </div>
     </div>
   );
 };
 
 const NavCollapsedHeader = (props: NavHeaderProps) => {
   return (
-    <div>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light">
-        <div className="container-fluid">
-          <button
-            type="button"
-            id="sidebarCollapse"
-            className="btn btn-info"
-            onClick={props.onClick}
-          >
-            <i className="fas fa-align-left"></i>
-          </button>
-        </div>
-      </nav>
+    <div className='sidebar__button'>
+      <button
+        type="button"
+        id="sidebarCollapse"
+        className="btn btn-outline-light"
+        onClick={props.onClick}
+      >
+        <FA
+          className="sidebar__button__icon"
+          name="chevron-circle-right"
+          size="2x"
+          style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }}
+          onClick={props.onClick}
+        />
+      </button>
     </div>
   );
 };
 
 const NavHeader = (props: NavHeaderProps) => {
   return (
-    <div>
-    {
-      props.collapse ?
-      <NavCollapsedHeader
-        title={''}
-        onClick={props.onClick}
-      /> :
-      <NavFullHeader
-        title={props.title}
-        onClick={props.onClick}
-      />
-    }
-    </div>
+    <nav className='navbar navbar-dark bg-dark sidebar__header'>
+      <div className='container sidebar__header'>
+        {
+          props.collapse ?
+          <NavCollapsedHeader
+            title={''}
+            onClick={props.onClick}
+          /> :
+          <NavFullHeader
+            title={props.title}
+            onClick={props.onClick}
+          />
+        }
+      </div>
+    </nav>
   );
 };
 

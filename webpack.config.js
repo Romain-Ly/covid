@@ -62,7 +62,17 @@ module.exports = {
                 // For bootstrap.css
                 test: /\.css$/,
                 use: ['style-loader', 'css-loader']
-            }
+            },
+            {
+                // Font awesome
+                test: /.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/,
+                use: [{
+                  loader: 'file-loader',
+                  options: {
+                    name: '[name].[ext]',
+                  }
+                }]
+              },
         ]
     },
 
