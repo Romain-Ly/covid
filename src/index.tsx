@@ -4,6 +4,9 @@ import * as ReactDOM from 'react-dom';
 /* Views */
 import LeafletMap from './components/Map';
 import SideBar from './components/SideBar';
+import ChoroplethControls, {
+  useChoroplethcontrols
+} from './components/ChoroplethControls';
 
 import { fetchHospitalisationData, HospData } from './models/Hospitalisation';
 
@@ -12,6 +15,7 @@ import 'css/index.scss';
 
 /* Types */
 import { FeatureCollection } from 'geojson';
+import { ChoroplethProps } from './components/Choropleth';
 
 const fetchFrenchDepartments = async () => {
   /** Get French departments geoJson */
@@ -24,6 +28,32 @@ const fetchFrenchDepartments = async () => {
   } catch (error) {
     console.error(error);
   }
+};
+
+
+const IndexPage = (props : { geojson: FeatureCollection, hospData: HospData }) => {
+  const { choroplethProps, select } = useChoroplethcontrols();
+
+  const choroProps: ChoroplethProps = { ...choroplethProps,
+    getValue: (prop) => prop.data.total.dc,
+  };
+
+  return (
+    <div className='wrapper'>
+    <SideBar
+      title='Geomap'
+    >
+    <ChoroplethControls
+      onSelect={select}
+    />
+    </SideBar>
+    <LeafletMap
+      choropleth={choroProps}
+      geojson={props.geojson}
+      data={props.hospData}
+    />
+  </div>
+  );
 };
 
 const renderMap = async () => {
@@ -41,15 +71,10 @@ const renderMap = async () => {
   });
 
   ReactDOM.render((
-    <div className='wrapper'>
-      <SideBar
-        title='Geomap'
-      />
-      <LeafletMap
-        geojson={geojson}
-        data={hospData}
-      />
-    </div>
+    <IndexPage
+      geojson={geojson}
+      hospData={hospData}
+    />
   ),
     document.getElementById('map')
   );

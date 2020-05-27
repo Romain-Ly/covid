@@ -1,6 +1,6 @@
 /* Libs */
 import React, {
-  useRef
+  useRef,
 } from 'react';
 
 import { quantile } from 'simple-statistics';
@@ -24,7 +24,7 @@ type scaleColor = {
   value: string
 }
 
-interface ChoroplethProps extends GeojsonProps {
+export interface ChoroplethProps {
   /* Used to emphaze legend row */
   selectedValue?: number
 
@@ -32,10 +32,10 @@ interface ChoroplethProps extends GeojsonProps {
    getValue: (properties: GeoJSON.GeoJsonProperties ) => number;
 
   /* scale of colors used */
-   colors?: string[]
+   colors: string[]
 
-   /* Function to calculate scale */
-   scaleFunction?: 'quantile'
+   /* Function name to calculate scale */
+   scaleName: string
 }
 
 function buildQuantileScale(data: number[], colors: string[]): scaleColor[] {
@@ -55,14 +55,14 @@ function buildQuantileScale(data: number[], colors: string[]): scaleColor[] {
   return scaleColor;
 }
 
-function buildColorScale(props: ChoroplethProps): scaleColor[] {
+function buildColorScale(props: ChoroplethProps, geojson: GeoJSON.FeatureCollection): scaleColor[] {
   let data: number[] = [];
 
-  props.geojson.current.features.forEach((feature) => {
+  geojson.features.forEach((feature) => {
     data.push(props.getValue(feature.properties));
   });
 
-  switch (props.scaleFunction) {
+  switch (props.scaleName) {
     case 'quantile':
     default:
       return buildQuantileScale(data, props.colors);
@@ -83,8 +83,10 @@ function getColorCb(scaleColor:  scaleColor[]): (x: number) => string {
   });
 }
 
-const Choropleth = React.forwardRef((props: ChoroplethProps, ref: any) => {
-  const scaleColors = buildColorScale(props);
+const Choropleth = React.forwardRef(
+    (props: {controls: ChoroplethProps, geojson: GeojsonProps}, ref: any) =>
+  {
+  const scaleColors = buildColorScale(props.controls, props.geojson.geojson.current);
   const getColor = getColorCb(scaleColors);
   function style(feature: GeoJSON.Feature) {
     return {
@@ -181,9 +183,9 @@ const Choropleth = React.forwardRef((props: ChoroplethProps, ref: any) => {
     <div>
       <Geojson
         ref={ref}
-        geojson={props.geojson}
-        onMouseOver={props.onMouseOver}
-        onMouseOut={props.onMouseOut}
+        geojson={props.geojson.geojson}
+        onMouseOver={props.geojson.onMouseOver}
+        onMouseOut={props.geojson.onMouseOut}
         options={useRef<Leaflet.GeoJSONOptions>({style: style})}
         //style={style}
       />
@@ -191,7 +193,7 @@ const Choropleth = React.forwardRef((props: ChoroplethProps, ref: any) => {
         position='bottomright'
         title='Information'
         renderCb={infoRender}
-        information={{title: '', value: props.selectedValue}}
+        information={{title: '', value: props.controls.selectedValue}}
       />
     </div>
   );
@@ -199,15 +201,6 @@ const Choropleth = React.forwardRef((props: ChoroplethProps, ref: any) => {
 });
 
 Choropleth.displayName = 'Choropleth';
-
-Choropleth.defaultProps = {
-  /* default leaflet choropleth scale from dark red red to  light yellow */
-  colors: [
-    '#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C',
-    '#BD0026', '#800026'
-  ],
-  scaleFunction: 'quantile'
-};
 
 export default Choropleth;
 

@@ -28,8 +28,10 @@ import { HospData } from '../models/Hospitalisation';
 import 'css/map.scss';
 
 /* Types */
+import { ChoroplethProps } from './Choropleth';
 
 interface MapProps {
+  choropleth: ChoroplethProps;
   geojson: GeoJSON.FeatureCollection;
   data: HospData
 }
@@ -161,11 +163,16 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
       />
       <Choropleth
         ref={geoJsonRef}
-        geojson={useRef<GeoJSON.FeatureCollection>(props.geojson)}
-        onMouseOver={memGeojsonOnMouseOver}
-        onMouseOut={memGeojsonOnMouseOut}
-        getValue={(prop) => prop.data.total.dc}
-        selectedValue={properties.value}
+        controls={{
+          ...props.choropleth,
+          getValue: (prop) => prop.data.total.dc,
+          selectedValue: properties.value
+        }}
+        geojson={{
+          geojson: useRef<GeoJSON.FeatureCollection>(props.geojson),
+          onMouseOver: memGeojsonOnMouseOver,
+          onMouseOut: memGeojsonOnMouseOut
+        }}
       />
     </Map>
   );

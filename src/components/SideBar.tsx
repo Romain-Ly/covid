@@ -1,6 +1,8 @@
 /* Libs */
 import React, {
-  useState
+  useState,
+  FunctionComponent,
+  PropsWithChildren
 } from 'react';
 import FA from 'react-fontawesome';
 
@@ -99,7 +101,7 @@ const NavHeader = (props: NavHeaderProps) => {
 
 //#endregion
 
-const NavBar = (props: NavBarProps) => {
+const NavBar: FunctionComponent<NavBarProps> = (props: PropsWithChildren<NavBarProps>) => {
   let collapse;
   if (props.collapse) {
     collapse = 'collapsed';
@@ -117,13 +119,13 @@ const NavBar = (props: NavBarProps) => {
         onClick={props.onClick}
         collapse={props.collapse}
       />
+      {props.children}
     </nav>
   );
 };
 
-
-const SideBar = (props: SideBarProps) => {
-  const [collapse, setCollapse] = useState(props.collapse);
+const SideBar: FunctionComponent<SideBarProps> = (prop) => {
+  const [collapse, setCollapse] = useState(prop.collapse);
 
   const onClick = () => {
     setCollapse(!collapse);
@@ -131,10 +133,12 @@ const SideBar = (props: SideBarProps) => {
 
   return (
     <NavBar
-      {...props}
+      {...prop}
       collapse={collapse}
       onClick={onClick}
-    />
+    >
+      {prop.children}
+    </NavBar>
   );
 };
 
