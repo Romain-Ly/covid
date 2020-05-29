@@ -14,7 +14,8 @@ export interface GeojsonProps {
   geojson: RefObject<GeoJSON.FeatureCollection>;
   onMouseOver?: (evt: Leaflet.LeafletMouseEvent) => void;
   onMouseOut?: (evt: Leaflet.LeafletMouseEvent) => void;
-  options?: RefObject<Leaflet.GeoJSONOptions>;
+  options?: Leaflet.GeoJSONOptions;
+  geojsonkey?: string;
 }
 
 const Geojson = (props: GeojsonProps, ref:any) => {
@@ -23,10 +24,11 @@ const Geojson = (props: GeojsonProps, ref:any) => {
   return (
     <GeoJSON
       ref={ref}
+      key={props.geojsonkey}
       data={props.geojson.current}
       onMouseOver={props.onMouseOver}
       onMouseOut={props.onMouseOut}
-      {...props.options.current}
+      {...props.options}
     />
   );
 };

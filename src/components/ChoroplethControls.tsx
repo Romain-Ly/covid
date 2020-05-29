@@ -13,11 +13,14 @@ export const useChoroplethcontrols = () => {
       '#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C',
       '#BD0026', '#800026'
     ],
-    scaleName: 'quantile'
+    scaleName: 'quantile',
   });
 
   const select = (scale: string) => {
-    setChoroplethProps({...choroplethProps, scaleName: scale});
+    setChoroplethProps({
+      ...choroplethProps,
+      scaleName: scale,
+    });
   };
 
   return { choroplethProps, select };

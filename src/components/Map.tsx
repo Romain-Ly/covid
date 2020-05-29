@@ -12,6 +12,7 @@ import * as Leaflet from 'leaflet';
 
 import {
   Map,
+  GeoJSON
 } from 'react-leaflet';
 
 /* Views */
@@ -80,7 +81,7 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
 
   //#region Choropleth
 
-  const geoJsonRef = useRef(null);
+  const geoJsonRef = React.useRef(null);
 
   const geojsonOnMouseOver = (evt: Leaflet.LeafletMouseEvent): void =>  {
     /* Properties from leaflet feature properties */
@@ -110,7 +111,7 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
   };
 
   function geojsonOnMouseOut(evt: Leaflet.LeafletMouseEvent) {
-    geoJsonRef.current.leafletElement.resetStyle(evt.sourceTarget);
+    geoJsonRef.current.leafletElement.resetStyle(evt.propagatedFrom);
   }
 
   useEffect(() => {

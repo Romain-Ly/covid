@@ -1,7 +1,5 @@
 /* Libs */
-import React, {
-  useRef,
-} from 'react';
+import React from 'react';
 
 import { quantile } from 'simple-statistics';
 
@@ -12,7 +10,6 @@ import Geojson, { GeojsonProps } from './Geojson';
 import LegendInfo, {
   LegendInfoProps
 } from './LegendInfo';
-import * as Leaflet from 'leaflet';
 
 /* Styles */
 import 'css/choropleth.scss';
@@ -101,12 +98,94 @@ function getColorCb(scaleColor:  scaleColor[]): (x: number) => string {
   });
 }
 
+//#region Geojson Information
+
+const renderRow = (prop: LegendInfoProps) => {
+  let res = '';
+  let legendDone: boolean;
+  const scaleColors = prop.scaleColors;
+
+  for (var i = 0; i < scaleColors.length; i++) {
+    let curr = scaleColors[i];
+    let value: string;
+
+    let left, right, middle;
+    if (scaleColors[i+1]) {
+      left = curr.key;
+      middle = '&ndash;';
+      right = scaleColors[i+1].key;
+    } else {
+      left = '';
+      middle = '>';
+      right = curr.key;
+    }
+
+    /* emphase selected legend row. */
+    let legendSelected: '_not_selected' | '_selected' = '_not_selected';
+    let next = scaleColors[i+1];
+    if (!legendDone) {
+      if (next) {
+        if (prop.value < next.key) {
+          legendSelected = '_selected';
+          legendDone = true;
+        }
+      } else {
+        /* last legend tile. */
+        legendSelected = '_selected';
+        legendDone = true;
+      }
+    }
+
+    let select = 'legend_text' + legendSelected;
+    value = `
+    <div class="legend_text left ${select} col-sm">
+      ${left}
+    </div>
+    <div class="legend_text ${select} col-sm-1">
+      ${middle}
+    </div>
+    <div class="legend_text ${select} right col-sm">
+      ${right}
+    </div>
+    `;
+
+    select = 'legend' + legendSelected;
+    const toto = 'legend_row' + legendSelected;
+    res += `
+      <div class="row ${toto}">
+        <div class="legend_color col-sm-3 ">
+          <i class="${select}" style="background:${curr.value}"></i>
+        </div>
+        ${value}
+      </div>
+    `;
+
+    legendSelected = '_not_selected'; /* use it only once. */
+  }
+
+  return res;
+};
+
+const infoRender = (prop: LegendInfoProps) => {
+  return (`
+    <div class="legend">
+      <h6 class="title">${prop.title}</h6>
+      <div class="container">
+        ${renderRow(prop)}
+      </div>
+    </div>
+  `);
+};
+
+//#endregion
+
 const Choropleth = React.forwardRef(
-    (props: {controls: ChoroplethProps, geojson: GeojsonProps}, ref: any) =>
-  {
+    (props: {controls: ChoroplethProps, geojson: GeojsonProps}, ref: any) => {
+
   const scaleColors = buildColorScale(props.controls, props.geojson.geojson.current);
   const getColor = getColorCb(scaleColors);
-  function style(feature: GeoJSON.Feature) {
+
+  function stylef(feature: GeoJSON.Feature) {
     return {
       fillColor: getColor(feature.properties.data.total.dc),
       weight: 2,
@@ -117,95 +196,15 @@ const Choropleth = React.forwardRef(
     };
   }
 
-  //#region Geojson Information
-
-  const renderRow = (prop: LegendInfoProps) => {
-    let res = '';
-    let legendDone: boolean;
-    const scaleColors = prop.scaleColors;
-
-    for (var i = 0; i < scaleColors.length; i++) {
-      let curr = scaleColors[i];
-      let value: string;
-
-      let left, right, middle;
-      if (scaleColors[i+1]) {
-        left = curr.key;
-        middle = '&ndash;';
-        right = scaleColors[i+1].key;
-      } else {
-        left = '';
-        middle = '>';
-        right = curr.key;
-      }
-
-      /* emphase selected legend row. */
-      let legendSelected: '_not_selected' | '_selected' = '_not_selected';
-      let next = scaleColors[i+1];
-      if (!legendDone) {
-        if (next) {
-          if (prop.value < next.key) {
-            legendSelected = '_selected';
-            legendDone = true;
-          }
-        } else {
-          /* last legend tile. */
-          legendSelected = '_selected';
-          legendDone = true;
-        }
-      }
-
-      let select = 'legend_text' + legendSelected;
-      value = `
-      <div class="legend_text left ${select} col-sm">
-        ${left}
-      </div>
-      <div class="legend_text ${select} col-sm-1">
-        ${middle}
-      </div>
-      <div class="legend_text ${select} right col-sm">
-        ${right}
-      </div>
-      `;
-
-      select = 'legend' + legendSelected;
-      const toto = 'legend_row' + legendSelected;
-      res += `
-        <div class="row ${toto}">
-          <div class="legend_color col-sm-3 ">
-            <i class="${select}" style="background:${curr.value}"></i>
-          </div>
-          ${value}
-        </div>
-      `;
-
-      legendSelected = '_not_selected'; /* use it only once. */
-    }
-
-    return res;
-  };
-
-  const infoRender = (prop: LegendInfoProps) => {
-    return (`
-      <div class="legend">
-        <h6 class="title">${prop.title}</h6>
-        <div class="container">
-          ${renderRow(prop)}
-        </div>
-      </div>
-    `);
-  };
-
-  //#endregion
-
   return (
     <div>
       <Geojson
         ref={ref}
+        geojsonkey={props.controls.scaleName}
         geojson={props.geojson.geojson}
         onMouseOver={props.geojson.onMouseOver}
         onMouseOut={props.geojson.onMouseOut}
-        options={useRef<Leaflet.GeoJSONOptions>({style: style})}
+        options={{style: stylef}}
       />
       <LegendInfo
         position='bottomright'
@@ -224,5 +223,13 @@ const Choropleth = React.forwardRef(
 
 Choropleth.displayName = 'Choropleth';
 
-export default Choropleth;
+export default React.memo(Choropleth, (prev, next) => {
+  const prevc = prev.controls;
+  const nextc = next.controls;
+
+  if (prevc.scaleName !== nextc.scaleName) {
+    return false;
+  }
+  return true;
+});
 
