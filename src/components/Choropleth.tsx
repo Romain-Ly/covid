@@ -18,8 +18,7 @@ import * as Leaflet from 'leaflet';
 import 'css/choropleth.scss';
 
 /* Interfaces */
-
-type scaleColor = {
+export type scaleColor = {
   key: number
   value: string
 }
@@ -55,6 +54,23 @@ function buildQuantileScale(data: number[], colors: string[]): scaleColor[] {
   return scaleColor;
 }
 
+function buildEqualsScale(data: number[], colors: string[]): scaleColor[] {
+  const nbDivision = colors.length;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const equals = [];
+
+  for (let i = 0; i < nbDivision; i++) {
+    equals.push(min + (max-min)/nbDivision * i);
+  }
+  const scaleColor = equals.reduce((acc, curr, i) => {
+    acc.push({key: curr, value: colors[i]});
+    return acc;
+  }, []);
+
+  return scaleColor;
+}
+
 function buildColorScale(props: ChoroplethProps, geojson: GeoJSON.FeatureCollection): scaleColor[] {
   let data: number[] = [];
 
@@ -63,6 +79,8 @@ function buildColorScale(props: ChoroplethProps, geojson: GeoJSON.FeatureCollect
   });
 
   switch (props.scaleName) {
+    case 'equals':
+      return buildEqualsScale(data, props.colors);
     case 'quantile':
     default:
       return buildQuantileScale(data, props.colors);
@@ -104,6 +122,7 @@ const Choropleth = React.forwardRef(
   const renderRow = (prop: LegendInfoProps) => {
     let res = '';
     let legendDone: boolean;
+    const scaleColors = prop.scaleColors;
 
     for (var i = 0; i < scaleColors.length; i++) {
       let curr = scaleColors[i];
@@ -193,7 +212,11 @@ const Choropleth = React.forwardRef(
         position='bottomright'
         title='Information'
         renderCb={infoRender}
-        information={{title: '', value: props.controls.selectedValue}}
+        information={{
+          title: '',
+          value: props.controls.selectedValue,
+          scaleColors: scaleColors,
+        }}
       />
     </div>
   );

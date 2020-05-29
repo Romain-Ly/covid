@@ -12,12 +12,15 @@ import 'css/legend.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 /* Types */
+import { scaleColor } from './Choropleth';
+
 export type LegendInfoProps = {
   title?: string,
   id?: string | undefined;
   department?: string;
   key?: string;
   value?: number;
+  scaleColors?: scaleColor[];
 }
 
 type Props = {
