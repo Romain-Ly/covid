@@ -206,7 +206,6 @@ const Choropleth = React.forwardRef(
         onMouseOver={props.geojson.onMouseOver}
         onMouseOut={props.geojson.onMouseOut}
         options={useRef<Leaflet.GeoJSONOptions>({style: style})}
-        //style={style}
       />
       <LegendInfo
         position='bottomright'
