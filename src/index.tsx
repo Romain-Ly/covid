@@ -30,11 +30,11 @@ const fetchFrenchDepartments = async () => {
   }
 };
 
-
 const IndexPage = (props : { geojson: FeatureCollection, hospData: HospData }) => {
   const { choroplethProps, select } = useChoroplethcontrols();
 
-  const choroProps: ChoroplethProps = { ...choroplethProps,
+  const choroProps: ChoroplethProps = {
+    ...choroplethProps,
     getValue: (prop) => prop.data.total.dc,
   };
 

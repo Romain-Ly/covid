@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 
+import { ChoroplethScales, ChoroplethProps } from './Choropleth';
+
 export interface ChoroplethControlsProps {
   onSelect: (evt: string) => void;
 }
@@ -14,9 +16,9 @@ export const useChoroplethcontrols = () => {
       '#BD0026', '#800026'
     ],
     scaleName: 'quantile',
-  });
+  } as ChoroplethProps);
 
-  const select = (scale: string) => {
+  const select = (scale: ChoroplethScales) => {
     setChoroplethProps({
       ...choroplethProps,
       scaleName: scale,
@@ -38,7 +40,7 @@ const ChoroplethControls = (props: ChoroplethControlsProps) => {
       <Dropdown.Menu>
         <Dropdown.Item eventKey='quantile'>Quantile</Dropdown.Item>
         <Dropdown.Item eventKey='equals'>Equals</Dropdown.Item>
-        <Dropdown.Item eventKey='natural'>Natural Breaks</Dropdown.Item>
+        <Dropdown.Item eventKey='ckmeans'>Ckmeans</Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
   );

@@ -1,7 +1,7 @@
 /* Libs */
 import React from 'react';
 
-import { quantile } from 'simple-statistics';
+import { quantile, ckmeans } from 'simple-statistics';
 
 /* Views */
 import Geojson, { GeojsonProps } from './Geojson';
@@ -15,6 +15,9 @@ import LegendInfo, {
 import 'css/choropleth.scss';
 
 /* Interfaces */
+
+export type ChoroplethScales = 'quantile' | 'equals' | 'ckmeans'
+
 export type scaleColor = {
   key: number
   value: string
@@ -25,13 +28,13 @@ export interface ChoroplethProps {
   selectedValue?: number
 
   /* function returning the value for each geojson.properties. */
-   getValue: (properties: GeoJSON.GeoJsonProperties ) => number;
+  getValue: (properties: GeoJSON.GeoJsonProperties ) => number;
 
   /* scale of colors used */
-   colors: string[]
+  colors: string[]
 
    /* Function name to calculate scale */
-   scaleName: string
+   scaleName: ChoroplethScales
 }
 
 function buildQuantileScale(data: number[], colors: string[]): scaleColor[] {
@@ -43,12 +46,11 @@ function buildQuantileScale(data: number[], colors: string[]): scaleColor[] {
   }
 
   const scale = quantile(data, quantiles);
-  const scaleColor = scale.reduce((acc, curr, i) => {
+
+  return scale.reduce((acc, curr, i) => {
     acc.push({key: curr, value: colors[i]});
     return acc;
   }, []);
-
-  return scaleColor;
 }
 
 function buildEqualsScale(data: number[], colors: string[]): scaleColor[] {
@@ -60,12 +62,33 @@ function buildEqualsScale(data: number[], colors: string[]): scaleColor[] {
   for (let i = 0; i < nbDivision; i++) {
     equals.push(min + (max-min)/nbDivision * i);
   }
-  const scaleColor = equals.reduce((acc, curr, i) => {
+  return equals.reduce((acc, curr, i) => {
     acc.push({key: curr, value: colors[i]});
     return acc;
   }, []);
+}
 
-  return scaleColor;
+/* ckmeans seems to be an improvement of jenks natural breaks which is
+ * a common classifier used in choropleth maps.
+ * https://simplestatistics.org/docs/#ckmeans
+ */
+function buildCkmeansScale(data: number[], colors: string[]): scaleColor[] {
+  const nbDivision = colors.length;
+  const clusters = ckmeans(data, nbDivision);
+  const breaks = [];
+
+  /* clusters of similar numbersm, with nbDivision = 3:
+   * [[-1, -1, -1, -1], [2, 2, 2], [4, 5, 6]]);
+   */
+
+  for (let i = 0; i < nbDivision ; i++) {
+    breaks.push(Math.min(...clusters[i]));
+  }
+
+  return breaks.reduce((acc, curr, i) => {
+    acc.push({key: curr, value: colors[i]});
+    return acc;
+  }, []);
 }
 
 function buildColorScale(props: ChoroplethProps, geojson: GeoJSON.FeatureCollection): scaleColor[] {
@@ -79,8 +102,10 @@ function buildColorScale(props: ChoroplethProps, geojson: GeoJSON.FeatureCollect
     case 'equals':
       return buildEqualsScale(data, props.colors);
     case 'quantile':
-    default:
       return buildQuantileScale(data, props.colors);
+    case 'ckmeans':
+    default:
+      return buildCkmeansScale(data, props.colors);
   }
 }
 
