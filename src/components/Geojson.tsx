@@ -33,4 +33,9 @@ const Geojson = (props: GeojsonProps, ref:any) => {
   );
 };
 
-export default React.memo(React.forwardRef(Geojson));
+export default React.memo(React.forwardRef(Geojson), (prev, next) => {
+  if (prev.geojsonkey !== next.geojsonkey) {
+    return false;
+  }
+  return true;
+});

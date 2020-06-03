@@ -248,13 +248,4 @@ const Choropleth = React.forwardRef(
 
 Choropleth.displayName = 'Choropleth';
 
-export default React.memo(Choropleth, (prev, next) => {
-  const prevc = prev.controls;
-  const nextc = next.controls;
-
-  if (prevc.scaleName !== nextc.scaleName) {
-    return false;
-  }
-  return true;
-});
-
+export default React.memo(Choropleth);
