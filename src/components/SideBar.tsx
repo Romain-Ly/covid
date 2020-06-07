@@ -4,146 +4,81 @@ import React, {
   FunctionComponent,
   PropsWithChildren
 } from 'react';
-import FA from 'react-fontawesome';
 
 /* Styles */
 import 'css/sidebar.scss';
 
 /* Interfaces */
+export type SideBarState = 'collapsed' | 'active';
+
 interface SideBarProps {
-  title: string
-  collapse?: boolean
+  state?: SideBarState
 }
 
-interface NavBarProps extends SideBarProps {
-  onClick: () => void
+export interface SideIconProps {
+  onClick?: () => void
 }
 
-interface NavHeaderProps {
-  title: string,
-  onClick: () => void
-  collapse?: boolean
-}
+interface SideContentProps {}
 
-//#region NavHeader
+interface SideLineProps {}
 
-const NavFullHeader = (props: NavHeaderProps) => {
+export const SideIcon: FunctionComponent<SideIconProps> = (props: PropsWithChildren<SideIconProps>) => {
   return (
-    <div
-     className='row'
-     onClick={props.onClick}
-    >
-      <div className='col-sm-8'>
-        <h3>
-          {props.title}
-        </h3>
-      </div>
-      <div className='col-sm-4'>
-        <button
-          type="button"
-          id="sidebarCollapse"
-          className="btn btn-outline-light"
-          onClick={props.onClick}
-        >
-          <FA
-            className="sidebar__button__icon"
-            name="chevron-circle-left"
-            size="2x"
-            style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }}
-            onClick={props.onClick}
-          />
-        </button>
-      </div>
+    <div className='sideicon col-sm-4'>
+      {props.children}
     </div>
   );
 };
 
-const NavCollapsedHeader = (props: NavHeaderProps) => {
+export const SideContent: FunctionComponent<SideContentProps> = (props: PropsWithChildren<SideContentProps>) => {
   return (
-    <div className='sidebar__button'>
-      <button
-        type="button"
-        id="sidebarCollapse"
-        className="btn btn-outline-light"
-        onClick={props.onClick}
-      >
-        <FA
-          className="sidebar__button__icon"
-          name="chevron-circle-right"
-          size="2x"
-          style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }}
-          onClick={props.onClick}
-        />
-      </button>
+    <div className='sidecontent col-sm'>
+      {props.children}
     </div>
   );
 };
 
-const NavHeader = (props: NavHeaderProps) => {
+export const SideLine: FunctionComponent<SideLineProps> = (props: PropsWithChildren<SideLineProps>) => {
   return (
-    <nav className='navbar navbar-dark bg-dark sidebar__header'>
-      <div className='container sidebar__header'>
-        {
-          props.collapse ?
-          <NavCollapsedHeader
-            title={''}
-            onClick={props.onClick}
-          /> :
-          <NavFullHeader
-            title={props.title}
-            onClick={props.onClick}
-          />
-        }
-      </div>
-    </nav>
+    <div className='sideline row'>
+      {props.children}
+    </div>
   );
 };
 
-//#endregion
+export const useSideBar = () => {
+  const [collapse, setCollapse] = useState('collapsed' as SideBarState);
 
-const NavBar: FunctionComponent<NavBarProps> = (props: PropsWithChildren<NavBarProps>) => {
-  let collapse;
-  if (props.collapse) {
-    collapse = 'collapsed';
-  } else {
-    collapse = 'active';
-  }
+  const onClick = () => {
+    switch(collapse) {
+      case 'collapsed':
+        setCollapse('active');
+        break;
+      case 'active':
+        setCollapse('collapsed');
+        break;
+      default:
+        setCollapse('collapsed');
+    }
+  };
 
+  return { collapse, onClick};
+};
+
+export const SideBar: FunctionComponent<SideBarProps> = (props: PropsWithChildren<SideBarProps>) => {
   return (
     <nav
       id='sidebar'
-      className={['sidebar', collapse].join(' ')}
+      className={['sidebar', props.state].join(' ')}
     >
-      <NavHeader
-        title={props.title}
-        onClick={props.onClick}
-        collapse={props.collapse}
-      />
       {props.children}
     </nav>
   );
 };
 
-const SideBar: FunctionComponent<SideBarProps> = (prop) => {
-  const [collapse, setCollapse] = useState(prop.collapse);
-
-  const onClick = () => {
-    setCollapse(!collapse);
-  };
-
-  return (
-    <NavBar
-      {...prop}
-      collapse={collapse}
-      onClick={onClick}
-    >
-      {prop.children}
-    </NavBar>
-  );
-};
-
 SideBar.defaultProps = {
-  collapse: false
+  state: 'collapsed'
 };
 
 export default SideBar;

@@ -22,16 +22,24 @@ $header-color: #343a40;
 
     &.collapsed {
         @extend .sidebar;
-        min-width: 70px;
-        max-width: 70px;
+        min-width: 49x;
+        max-width: 49px;
         text-align: center;
+
+        & .sidecontent {
+            display: none
+        }
     }
 
-    &__header {
+    &.sideline .sidecontent .collapsed {
+        display: none
+    }
+
+    &.sideline {
         padding-left: 5px;
         padding-right: 5px;
 
-        & .row {
+        &.row {
             width: 100%;
             margin: 0 0px;
             align-items: center;
