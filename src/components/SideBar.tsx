@@ -48,10 +48,10 @@ export const SideLine: FunctionComponent<SideLineProps> = (props: PropsWithChild
 };
 
 export const useSideBar = () => {
-  const [collapse, setCollapse] = useState('collapsed' as SideBarState);
+  const [state, setCollapse] = useState<SideBarState>('collapsed');
 
   const onClick = () => {
-    switch(collapse) {
+    switch(state) {
       case 'collapsed':
         setCollapse('active');
         break;
@@ -63,14 +63,14 @@ export const useSideBar = () => {
     }
   };
 
-  return { collapse, onClick};
+  return { state, onClick };
 };
 
 export const SideBar: FunctionComponent<SideBarProps> = (props: PropsWithChildren<SideBarProps>) => {
   return (
     <nav
       id='sidebar'
-      className={['sidebar', props.state].join(' ')}
+      className={['sidebar row', props.state].join(' ')}
     >
       {props.children}
     </nav>

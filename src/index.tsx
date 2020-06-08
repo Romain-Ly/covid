@@ -4,7 +4,7 @@ import * as ReactDOM from 'react-dom';
 /* Views */
 import LeafletMap from './components/Map';
 import NavBar from './NavBar';
-import ChoroplethControls, {
+import {
   useChoroplethcontrols
 } from './components/ChoroplethControls';
 
@@ -40,13 +40,7 @@ const IndexPage = (props : { geojson: FeatureCollection, hospData: HospData }) =
 
   return (
     <div className='wrapper'>
-    <NavBar
-      title='Geomap'
-    >
-      <ChoroplethControls
-        onSelect={select}
-      />
-    </NavBar>
+    <NavBar select={select} />
     <LeafletMap
       choropleth={choroProps}
       geojson={props.geojson}
