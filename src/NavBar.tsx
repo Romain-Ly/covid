@@ -4,7 +4,12 @@ import React, {
   PropsWithChildren,
   useState
 } from 'react';
-import FA from 'react-fontawesome';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faChevronCircleRight,
+  faGlobeEurope
+} from '@fortawesome/free-solid-svg-icons';
 
 import {
   SideBar,
@@ -44,11 +49,10 @@ const HomeIcon = (props: HomeProps) => {
       className="btn btn-outline-light"
       onClick={props.onClick}
     >
-      <FA
+      <FontAwesomeIcon
         className="sidebar__button__icon"
-        name="chevron-circle-right"
+        icon={faChevronCircleRight}
         size="lg"
-        style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }}
         onClick={props.onClick}
       />
     </button>
@@ -74,10 +78,9 @@ const ChoroplethIcon = (props: HomeProps) => {
       className="btn btn-outline-light"
       onClick={props.onClick}
     >
-      <FA
-        name="amazon"
+      <FontAwesomeIcon
+        icon={faGlobeEurope}
         size="lg"
-        style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }}
         onClick={props.onClick}
       />
     </button>
