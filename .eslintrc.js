@@ -20,6 +20,7 @@ module.exports = {
   },
   'plugins': [
     'react',
+    "react-hooks",
     '@typescript-eslint',
   ],
   'rules': {
@@ -32,6 +33,8 @@ module.exports = {
     "@typescript-eslint/no-unused-vars": ['warn'],
     'no-unreachable': 'error',
     'quotes': ['error', 'single'],
-    'semi': ['error', 'always']
+    'semi': ['error', 'always'],
+    "react-hooks/rules-of-hooks": "error", // Checks rules of Hooks
+    "react-hooks/exhaustive-deps": "warn" // Checks effect dependencies
   },
 };
