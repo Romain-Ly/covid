@@ -1,12 +1,14 @@
 import React from 'react';
 import * as ReactDOM from 'react-dom';
 
+/* Store */
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import { rootReducer } from './reduce';
+
 /* Views */
 import LeafletMap from './components/Map';
 import NavBar from './NavBar';
-import {
-  useChoroplethcontrols
-} from './components/ChoroplethControls';
 
 import { fetchHospitalisationData, HospData } from './models/Hospitalisation';
 
@@ -15,7 +17,6 @@ import 'css/index.scss';
 
 /* Types */
 import { FeatureCollection } from 'geojson';
-import { ChoroplethProps } from './components/Choropleth';
 
 const fetchFrenchDepartments = async () => {
   /** Get French departments geoJson */
@@ -31,22 +32,18 @@ const fetchFrenchDepartments = async () => {
 };
 
 const IndexPage = (props : { geojson: FeatureCollection, hospData: HospData }) => {
-  const { choroplethProps, select } = useChoroplethcontrols();
-
-  const choroProps: ChoroplethProps = {
-    ...choroplethProps,
-    getValue: (prop) => prop.data.total.dc,
-  };
+  const store = createStore(rootReducer);
 
   return (
-    <div className='wrapper'>
-    <NavBar select={select} />
-    <LeafletMap
-      choropleth={choroProps}
-      geojson={props.geojson}
-      data={props.hospData}
-    />
-  </div>
+    <Provider store={store}>
+      <div className='wrapper'>
+        <NavBar/>
+        <LeafletMap
+          geojson={props.geojson}
+          data={props.hospData}
+        />
+      </div>
+    </Provider>
   );
 };
 

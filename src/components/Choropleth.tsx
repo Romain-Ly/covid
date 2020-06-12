@@ -10,14 +10,12 @@ import Geojson, { GeojsonProps } from './Geojson';
 import LegendInfo, {
   LegendInfoProps
 } from './LegendInfo';
+import { ChoroplethScales } from '../store/choropleth/types';
 
 /* Styles */
 import 'css/choropleth.scss';
 
 /* Interfaces */
-
-export type ChoroplethScales = 'quantile' | 'equals' | 'ckmeans'
-
 export type scaleColor = {
   key: number
   value: string

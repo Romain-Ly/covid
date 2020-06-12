@@ -1,37 +1,25 @@
 /* Libs */
-import React, { useState } from 'react';
+import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-import { ChoroplethScales, ChoroplethProps } from './Choropleth';
+/* Store. */
+import { useDispatch } from 'react-redux';
+import { setScale } from '../store/choropleth/action';
 
+/* Types. */
+import { ChoroplethScales } from '../store/choropleth/types';
+
+/* Interfaces */
 export interface ChoroplethControlsProps {
   onSelect: (evt: string) => void;
 }
 
-export const useChoroplethcontrols = () => {
-  const [choroplethProps, setChoroplethProps] = useState({
-    /* default leaflet choropleth scale from dark red red to  light yellow */
-    colors: [
-      '#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C',
-      '#BD0026', '#800026'
-    ],
-    scaleName: 'quantile',
-  } as ChoroplethProps);
+const ChoroplethControls = () => {
+  const dispatch = useDispatch();
 
-  const select = (scale: ChoroplethScales) => {
-    setChoroplethProps({
-      ...choroplethProps,
-      scaleName: scale,
-    });
-  };
-
-  return { choroplethProps, select };
-};
-
-const ChoroplethControls = (props: ChoroplethControlsProps) => {
   return (
     <Dropdown
-      onSelect={props.onSelect}
+      onSelect={(scale: ChoroplethScales) =>  { dispatch(setScale(scale)); }}
     >
       <Dropdown.Toggle variant="success" id="dropdown-basic">
         Dropdown Button

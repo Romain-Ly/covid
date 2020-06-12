@@ -20,7 +20,6 @@ import {
 } from './components/SideBar';
 
 import ChoroplethControls from './components/ChoroplethControls';
-import { ChoroplethScales } from './components/Choropleth';
 
 /* Interfaces */
 interface HomeProps {
@@ -31,12 +30,10 @@ type ContentState =  'home' | 'choropleth' | 'none'
 
 interface ContentProps {
   contentState: ContentState
-  select: (scale: ChoroplethScales) => void
 }
 
 interface NavBarProps {
   state?: SideBarState
-  select: (scale: ChoroplethScales) => void
 }
 
 //#region Home
@@ -87,11 +84,9 @@ const ChoroplethIcon = (props: HomeProps) => {
   );
 };
 
-const ChoroplethContent = (props: ContentProps) => {
+const ChoroplethContent = () => {
   return (
-    <ChoroplethControls
-      onSelect={props.select}
-    />
+    <ChoroplethControls/>
   );
 };
 
@@ -102,14 +97,14 @@ const NavContent = (props: ContentProps) => {
     case 'home':
       return HomeContent();
     case 'choropleth':
-      return ChoroplethContent(props);
+      return ChoroplethContent();
     default:
       return null;
   }
 
 };
 
-const NavBar: FunctionComponent<NavBarProps> = (props: PropsWithChildren<NavBarProps>) => {
+const NavBar: FunctionComponent<NavBarProps> = (_props: PropsWithChildren<NavBarProps>) => {
   const { state, onClick } = useSideBar();
   const [ contentState, setContent ] = useState<ContentState>();
 
@@ -137,7 +132,6 @@ const NavBar: FunctionComponent<NavBarProps> = (props: PropsWithChildren<NavBarP
       </SideIcon>
       <SideContent>
         <NavContent
-          select={props.select}
           contentState={contentState}
         />
       </SideContent>

@@ -15,6 +15,9 @@ import {
   GeoJSON
 } from 'react-leaflet';
 
+/* Store. */
+import { useChoroplethState } from '../reduce';
+
 /* Views */
 import LegendInfo, {
   LegendInfoProps
@@ -28,11 +31,7 @@ import { HospData } from '../models/Hospitalisation';
 /* Styles */
 import 'css/map.scss';
 
-/* Types */
-import { ChoroplethProps } from './Choropleth';
-
 interface MapProps {
-  choropleth: ChoroplethProps;
   geojson: GeoJSON.FeatureCollection;
   data: HospData
 }
@@ -147,10 +146,17 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
   };
 
   //#endregion
+  const choroState = useChoroplethState();
 
   const position: L.LatLngExpression = [state.lat, state.lng];
   const memGeojsonOnMouseOver = useCallback(geojsonOnMouseOver, []);
   const memGeojsonOnMouseOut = useCallback(geojsonOnMouseOut, []);
+
+  /* FIXME: should be on reduce. */
+  const colors = [
+    '#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C',
+    '#BD0026', '#800026'
+  ];
 
   return (
     <Map center={position} zoom={state.zoom}>
@@ -165,7 +171,8 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
       <Choropleth
         ref={geoJsonRef}
         controls={{
-          ...props.choropleth,
+          colors: colors,
+          scaleName: choroState.scale,
           getValue: (prop) => prop.data.total.dc,
           selectedValue: properties.value
         }}
