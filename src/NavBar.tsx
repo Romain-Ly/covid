@@ -112,17 +112,23 @@ const NavContent = (props: ContentProps) => {
 
 const NavBar: FunctionComponent<NavBarProps> = (_props: PropsWithChildren<NavBarProps>) => {
   const { state, onClick } = useSideBar();
-  const [ contentState, setContent ] = useState<ContentState>();
+  const [ contentState, setContent ] = useState<ContentState>('home');
+
+  const setContentClick = (newState: ContentState) => {
+    setContent(newState);
+    if (state === 'collapsed'
+    ||  contentState === newState)
+    {
+      onClick();
+    }
+  };
 
   const onHomeClick = () => {
     setContent('home');
     onClick();
   };
 
-  const onChoroplethClick = () => {
-    setContent('choropleth');
-    onClick();
-  };
+  const onChoroplethClick = () => setContentClick('choropleth');
 
   return (
     <SideBar
