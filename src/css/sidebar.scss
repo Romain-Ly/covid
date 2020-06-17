@@ -8,9 +8,9 @@ $header-color: #343a40;
     color: #fff;
     transition: all 0.1s;
     border-style: solid;
-    border-left-width: 0px;
-    border-bottom-width: 0px;
-    border-top-width: 0px;
+    border-left-width: 1px;
+    border-bottom-width: 1px;
+    border-top-width: 1px;
     border-right-width: 1px;
     border-color: darken($base-color, 25%);
 
@@ -22,8 +22,6 @@ $header-color: #343a40;
 
     &.collapsed {
         @extend .sidebar;
-        min-width: 77px;
-        max-width: 77px;
         text-align: center;
 
         & .sidecontent {
@@ -31,13 +29,14 @@ $header-color: #343a40;
         }
     }
 
-    &.sidecontent .collapsed {
-        display: none
-    }
-
-    &.sideicon {
+    & .sideicon {
         background: darken($base-color, 25%);
-        padding-left: 5px;
-        padding-right: 5px;
+        display: flex;
+        flex-direction: column;
+        border-style: solid;
+        border-left-width: 0px;
+        border-bottom-width: 0px;
+        border-top-width: 0px;
+        border-right-width: 1px;
     }
 }

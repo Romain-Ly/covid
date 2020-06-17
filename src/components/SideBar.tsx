@@ -25,7 +25,7 @@ interface SideLineProps {}
 
 export const SideIcon: FunctionComponent<SideIconProps> = (props: PropsWithChildren<SideIconProps>) => {
   return (
-    <div className='sideicon col-sm-4'>
+    <div className='sideicon'>
       {props.children}
     </div>
   );

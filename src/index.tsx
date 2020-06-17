@@ -37,7 +37,9 @@ const IndexPage = (props : { geojson: FeatureCollection, hospData: HospData }) =
   return (
     <Provider store={store}>
       <div className='wrapper'>
-        <NavBar/>
+        <div className='navbar'>
+          <NavBar/>
+        </div>
         <LeafletMap
           geojson={props.geojson}
           data={props.hospData}
