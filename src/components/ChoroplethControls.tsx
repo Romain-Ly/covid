@@ -1,13 +1,22 @@
 /* Libs */
 import React from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
+import Form from 'react-bootstrap/Form';
 
 /* Store. */
 import { useDispatch } from 'react-redux';
 import { setScale } from '../store/choropleth/action';
+import { useChoroplethState } from '../reduce';
 
 /* Types. */
 import { ChoroplethScales } from '../store/choropleth/types';
+
+/* XXX: hack to get FormControlElement when it is not exported from Form Control
+ * see also https://github.com/DefinitelyTyped/DefinitelyTyped/issues/16208
+ */
+type FormControlElement =
+  | HTMLInputElement
+  | HTMLSelectElement
+  | HTMLTextAreaElement;
 
 /* Interfaces */
 export interface ChoroplethControlsProps {
@@ -16,21 +25,23 @@ export interface ChoroplethControlsProps {
 
 const ChoroplethControls = () => {
   const dispatch = useDispatch();
+  const choroState = useChoroplethState();
 
   return (
-    <Dropdown
-      onSelect={(scale: ChoroplethScales) =>  { dispatch(setScale(scale)); }}
-    >
-      <Dropdown.Toggle variant="success" id="dropdown-basic">
-        Dropdown Button
-      </Dropdown.Toggle>
-
-      <Dropdown.Menu>
-        <Dropdown.Item eventKey='quantile'>Quantile</Dropdown.Item>
-        <Dropdown.Item eventKey='equals'>Equals</Dropdown.Item>
-        <Dropdown.Item eventKey='ckmeans'>Ckmeans</Dropdown.Item>
-      </Dropdown.Menu>
-    </Dropdown>
+    <Form.Group controlId="exampleForm.ControlSelect2">
+      <Form.Label>Scale</Form.Label>
+      <Form.Control
+        as="select"
+        onChange={(event: React.ChangeEvent<FormControlElement>) => {
+          dispatch(setScale(event.target.value as ChoroplethScales));
+        }}
+        value={choroState.scale}
+      >
+        <option value='quantile'>quantile</option>
+        <option value='equals'>equals</option>
+        <option value='ckmeans'>ckmeans</option>
+      </Form.Control>
+    </Form.Group>
   );
 };
 
