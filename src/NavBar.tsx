@@ -7,6 +7,7 @@ import React, {
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
+  faChevronCircleLeft,
   faChevronCircleRight,
   faGlobeEurope
 } from '@fortawesome/free-solid-svg-icons';
@@ -22,7 +23,7 @@ import {
 import ChoroplethControls from './components/ChoroplethControls';
 
 /* Interfaces */
-interface HomeProps {
+interface HomeProps extends NavBarProps{
   onClick?: () => void
 }
 
@@ -39,6 +40,11 @@ interface NavBarProps {
 //#region Home
 
 const HomeIcon = (props: HomeProps) => {
+  let icon = faChevronCircleLeft;
+  if (props.state === 'collapsed') {
+    icon = faChevronCircleRight;
+  }
+
   return (
     <button
       type="button"
@@ -48,7 +54,7 @@ const HomeIcon = (props: HomeProps) => {
     >
       <FontAwesomeIcon
         className="sidebar__button__icon"
-        icon={faChevronCircleRight}
+        icon={icon}
         size="lg"
         onClick={props.onClick}
       />
@@ -124,6 +130,7 @@ const NavBar: FunctionComponent<NavBarProps> = (_props: PropsWithChildren<NavBar
     >
       <SideIcon>
         <HomeIcon
+          state={state}
           onClick={onHomeClick}
         />
         <ChoroplethIcon
