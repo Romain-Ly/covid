@@ -9,7 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faChevronCircleLeft,
   faChevronCircleRight,
-  faGlobeEurope
+  faGlobeEurope,
+  faInfo
 } from '@fortawesome/free-solid-svg-icons';
 
 import {
@@ -20,14 +21,16 @@ import {
   useSideBar,
 } from './components/SideBar';
 
+/* Views */
 import ChoroplethControls from './components/ChoroplethControls';
+import { HistPlot } from './components/Chart/Hist';
 
 /* Interfaces */
 interface HomeProps extends NavBarProps{
   onClick?: () => void
 }
 
-type ContentState =  'home' | 'choropleth' | 'none'
+type ContentState =  'home' | 'choropleth' | 'info' | 'none'
 
 interface ContentProps {
   contentState: ContentState
@@ -97,6 +100,32 @@ const ChoroplethContent = () => {
 };
 
 //#endregion
+//#region info
+
+const InfoIcon = (props: HomeProps) => {
+  return (
+    <button
+      type="button"
+      id="sidebarCollapse"
+      className="btn btn-outline-light"
+      onClick={props.onClick}
+    >
+      <FontAwesomeIcon
+        icon={faInfo}
+        size="lg"
+        onClick={props.onClick}
+      />
+    </button>
+  );
+};
+
+const InfoContent = () => {
+  return (
+    <HistPlot/>
+  );
+};
+
+//#endregion
 
 const NavContent = (props: ContentProps) => {
   switch (props.contentState) {
@@ -104,6 +133,8 @@ const NavContent = (props: ContentProps) => {
       return HomeContent();
     case 'choropleth':
       return ChoroplethContent();
+    case 'info':
+      return InfoContent();
     default:
       return null;
   }
@@ -129,6 +160,7 @@ const NavBar: FunctionComponent<NavBarProps> = (_props: PropsWithChildren<NavBar
   };
 
   const onChoroplethClick = () => setContentClick('choropleth');
+  const onInfoClick = () => setContentClick('info');
 
   return (
     <SideBar
@@ -141,6 +173,9 @@ const NavBar: FunctionComponent<NavBarProps> = (_props: PropsWithChildren<NavBar
         />
         <ChoroplethIcon
           onClick={onChoroplethClick}
+        />
+        <InfoIcon
+          onClick={onInfoClick}
         />
       </SideIcon>
       <SideContent>
