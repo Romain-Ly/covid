@@ -12,7 +12,7 @@ import 'css/legend.scss';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 /* Types */
-import { scaleColor } from './Choropleth';
+import { scaleColor } from '../helpers/scales';
 
 export type LegendInfoProps = {
   title?: string,
