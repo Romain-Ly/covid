@@ -3,13 +3,16 @@ import * as ReactDOM from 'react-dom';
 
 /* Store */
 import { createStore } from 'redux';
-import { Provider } from 'react-redux';
+import { Provider, useDispatch } from 'react-redux';
 import { rootReducer } from './reduce';
+import { SetDistributionData } from './store/data/action';
+
 
 /* Views */
 import LeafletMap from './components/Map';
 import NavBar from './NavBar';
 
+/* Models. */
 import { fetchHospitalisationData, HospData } from './models/Hospitalisation';
 
 /* Styles */
@@ -17,6 +20,8 @@ import 'css/index.scss';
 
 /* Types */
 import { FeatureCollection } from 'geojson';
+import { RawData } from './store/data/types';
+
 
 const fetchFrenchDepartments = async () => {
   /** Get French departments geoJson */
@@ -31,25 +36,45 @@ const fetchFrenchDepartments = async () => {
   }
 };
 
+/* FIXME: we should select data and should be in a model. */
+const getDc = (data: GeoJSON.GeoJsonProperties) => data.total.dc;
+const getDept = (data: GeoJSON.GeoJsonProperties) => data.total.dep;
+
+const getDistributionData = (geojson: GeoJSON.FeatureCollection) => {
+  let data: RawData[] = [];
+
+  geojson.features.forEach((feature) => {
+    data.push({
+      key: getDept(feature.properties.data),
+      value: getDc(feature.properties.data)
+    });
+  });
+
+  return data;
+};
+
 const IndexPage = (props : { geojson: FeatureCollection, hospData: HospData }) => {
-  const store = createStore(rootReducer);
+  const dispatch = useDispatch();
+
+  const distribData = getDistributionData(props.geojson);
+  dispatch(SetDistributionData(distribData));
 
   return (
-    <Provider store={store}>
-      <div className='wrapper'>
-        <div className='navbar'>
-          <NavBar/>
-        </div>
-        <LeafletMap
-          geojson={props.geojson}
-          data={props.hospData}
-        />
+    <div className='wrapper'>
+      <div className='navbar'>
+        <NavBar/>
       </div>
-    </Provider>
+      <LeafletMap
+        geojson={props.geojson}
+        data={props.hospData}
+      />
+    </div>
   );
 };
 
 const renderMap = async () => {
+  const store = createStore(rootReducer);
+
   const geojson: FeatureCollection = await fetchFrenchDepartments();
   const hospData: HospData = await fetchHospitalisationData();
 
@@ -64,10 +89,12 @@ const renderMap = async () => {
   });
 
   ReactDOM.render((
-    <IndexPage
-      geojson={geojson}
-      hospData={hospData}
+    <Provider store={store}>
+      <IndexPage
+        geojson={geojson}
+        hospData={hospData}
     />
+    </Provider>
   ),
     document.getElementById('map')
   );

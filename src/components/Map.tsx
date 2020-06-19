@@ -16,7 +16,10 @@ import {
 } from 'react-leaflet';
 
 /* Store. */
-import { useChoroplethState } from '../reduce';
+import {
+  useChoroplethState,
+  useDistributionData
+} from '../reduce';
 
 /* Views */
 import LegendInfo, {
@@ -147,11 +150,11 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
 
   //#endregion
   const choroState = useChoroplethState();
+  const DataState = useDistributionData();
 
   const position: L.LatLngExpression = [state.lat, state.lng];
   const memGeojsonOnMouseOver = useCallback(geojsonOnMouseOver, []);
   const memGeojsonOnMouseOut = useCallback(geojsonOnMouseOut, []);
-
   /* FIXME: should be on reduce. */
   const colors = [
     '#FFEDA0', '#FED976', '#FEB24C', '#FD8D3C', '#FC4E2A', '#E31A1C',
@@ -173,8 +176,8 @@ const LeafletMap:FunctionComponent<MapProps> = (props: MapProps) => {
         controls={{
           colors: colors,
           scaleName: choroState.scale,
-          getValue: (prop) => prop.data.total.dc,
-          selectedValue: properties.value
+          selectedValue: properties.value,
+          distributionData: DataState.data,
         }}
         geojson={{
           geojson: useRef<GeoJSON.FeatureCollection>(props.geojson),

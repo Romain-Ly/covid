@@ -15,6 +15,7 @@ import LegendInfo, {
 } from './LegendInfo';
 import { ChoroplethScales } from '../store/choropleth/types';
 import { scaleColor } from '../helpers/scales';
+import { RawData } from '../store/data/types';
 
 /* Styles */
 import 'css/choropleth.scss';
@@ -23,21 +24,21 @@ export interface ChoroplethProps {
   /* Used to emphaze legend row */
   selectedValue?: number
 
-  /* function returning the value for each geojson.properties. */
-  getValue: (properties: GeoJSON.GeoJsonProperties ) => number;
+  /* Distribution data. */
+  distributionData: RawData[]
 
   /* scale of colors used */
   colors: string[]
 
-   /* Function name to calculate scale */
-   scaleName: ChoroplethScales
+  /* Function name to calculate scale */
+  scaleName: ChoroplethScales
 }
 
-function buildColorScale(props: ChoroplethProps, geojson: GeoJSON.FeatureCollection): scaleColor[] {
+function buildColorScale(props: ChoroplethProps): scaleColor[] {
   let data: number[] = [];
 
-  geojson.features.forEach((feature) => {
-    data.push(props.getValue(feature.properties));
+  props.distributionData.forEach((elt: RawData) => {
+    data.push(elt.value);
   });
 
   switch (props.scaleName) {
@@ -149,7 +150,7 @@ const infoRender = (prop: LegendInfoProps) => {
 const Choropleth = React.forwardRef(
     (props: {controls: ChoroplethProps, geojson: GeojsonProps}, ref: any) => {
 
-  const scaleColors = buildColorScale(props.controls, props.geojson.geojson.current);
+  const scaleColors = buildColorScale(props.controls);
   const getColor = getColorCb(scaleColors);
 
   function stylef(feature: GeoJSON.Feature) {
