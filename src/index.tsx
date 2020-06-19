@@ -7,7 +7,6 @@ import { Provider, useDispatch } from 'react-redux';
 import { rootReducer } from './reduce';
 import { SetDistributionData } from './store/data/action';
 
-
 /* Views */
 import LeafletMap from './components/Map';
 import NavBar from './NavBar';

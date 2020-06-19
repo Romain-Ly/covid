@@ -1,7 +1,15 @@
+/* Libs. */
 import React, { useEffect } from 'react';
 import Chart from 'chart.js';
 
-export const HistPlot = () => {
+/* Interfaces. */
+export interface HistProp {
+  labels: number[]
+  data: number[]
+  colors: string[]
+}
+
+export const HistPlot = (props: HistProp) => {
   const chartRef = React.createRef<HTMLCanvasElement>();
 
   useEffect(() => {
@@ -11,26 +19,26 @@ export const HistPlot = () => {
     new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: [0, 1, 2, 3, 4],
+        labels: props.labels,
         datasets: [{
-          label: 'Group A',
-          data: [12, 19, 3, 5],
-          backgroundColor: 'rgba(255, 99, 132, 1)',
+          label: '',
+          data: props.data,
+          backgroundColor: props.colors,
         }]
       },
       options: {
         scales: {
           xAxes: [{
-            display: false,
-            //barPercentage: 1.30,
-          }, {
             display: true,
           }],
           yAxes: [{
             ticks: {
               beginAtZero:true
             }
-          }]
+          }],
+        },
+        legend: {
+          display: false,
         }
       }
     });

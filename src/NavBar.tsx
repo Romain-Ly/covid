@@ -23,7 +23,7 @@ import {
 
 /* Views */
 import ChoroplethControls from './components/ChoroplethControls';
-import { HistPlot } from './components/Chart/Hist';
+import { ChoroplethDistribution } from './info';
 
 /* Interfaces */
 interface HomeProps extends NavBarProps{
@@ -121,7 +121,7 @@ const InfoIcon = (props: HomeProps) => {
 
 const InfoContent = () => {
   return (
-    <HistPlot/>
+    <ChoroplethDistribution/>
   );
 };
 
