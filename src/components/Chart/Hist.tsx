@@ -1,5 +1,5 @@
 /* Libs. */
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Chart from 'chart.js';
 
 /* Interfaces. */
@@ -10,13 +10,16 @@ export interface HistProp {
 }
 
 export const HistPlot = (props: HistProp) => {
-  const chartRef = React.createRef<HTMLCanvasElement>();
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    const canvas = document.getElementById('myChart') as HTMLCanvasElement;
-    const ctx = canvas.getContext('2d');
+    const ctx = document.getElementById('myChart') as HTMLCanvasElement;
 
-    new Chart(ctx, {
+    if (canvasRef.current) {
+      canvasRef.current.destroy();
+    }
+
+    canvasRef.current = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: props.labels,
@@ -48,7 +51,6 @@ export const HistPlot = (props: HistProp) => {
     <div className="Histogram">
       <canvas
         id="myChart"
-        ref={chartRef}
       />
     </div>
   );
