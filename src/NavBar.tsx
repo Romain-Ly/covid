@@ -21,9 +21,21 @@ import {
   useSideBar,
 } from './components/SideBar';
 
+/* Store. */
+import {
+  useChoroplethState,
+  useDistributionData
+} from './reduce';
+
+/* Styles */
+import 'css/navbar.scss';
+
 /* Views */
 import ChoroplethControls from './components/ChoroplethControls';
-import { ChoroplethDistribution } from './info';
+import {
+  ChoroplethDistribution,
+  ChoroplethDistributionStore
+} from './info';
 
 /* Interfaces */
 interface HomeProps extends NavBarProps{
@@ -94,8 +106,24 @@ const ChoroplethIcon = (props: HomeProps) => {
 };
 
 const ChoroplethContent = () => {
+  const choroState = useChoroplethState();
+  const dataState = useDistributionData();
+  let data: number[] = [];
+
+  dataState.data.forEach((elt) => {
+    data.push(elt.value);
+  });
+
   return (
-    <ChoroplethControls/>
+    <div
+      className='choropleth_controls'
+    >
+      <ChoroplethControls/>
+      <ChoroplethDistribution
+        scale={choroState.scale}
+        data={data}
+      />
+    </div>
   );
 };
 
@@ -121,7 +149,7 @@ const InfoIcon = (props: HomeProps) => {
 
 const InfoContent = () => {
   return (
-    <ChoroplethDistribution/>
+    <ChoroplethDistributionStore/>
   );
 };
 
